@@ -1,0 +1,156 @@
+[
+  {
+    "command": "click the submit button",
+    "actionType": "click",
+    "timestamp": 1623456789000,
+    "source": "claude",
+    "isCorrect": true
+  },
+  {
+    "command": "scroll down the page",
+    "actionType": "scroll",
+    "timestamp": 1623456790000,
+    "source": "user",
+    "isCorrect": true
+  },
+  {
+    "command": "go to google",
+    "actionType": "navigate",
+    "timestamp": 1623456791000,
+    "source": "claude",
+    "isCorrect": true
+  },
+  {
+    "command": "read this article aloud",
+    "actionType": "read_aloud",
+    "timestamp": 1623456792000,
+    "source": "claude",
+    "isCorrect": true
+  },
+  {
+    "command": "give me a summary",
+    "actionType": "summarize",
+    "timestamp": 1623456793000,
+    "source": "user",
+    "isCorrect": true
+  },
+  {
+    "command": "find the price on this page",
+    "actionType": "find_on_page",
+    "timestamp": 1623456794000,
+    "source": "claude",
+    "isCorrect": true
+  },
+  {
+    "command": "translate to spanish",
+    "actionType": "translate",
+    "timestamp": 1623456795000,
+    "source": "user",
+    "isCorrect": true
+  },
+  {
+    "command": "zoom in",
+    "actionType": "zoom_page",
+    "timestamp": 1623456796000,
+    "source": "claude",
+    "isCorrect": true
+  },
+  {
+    "command": "close this tab",
+    "actionType": "tab_action",
+    "timestamp": 1623456797000,
+    "source": "user",
+    "isCorrect": true
+  },
+  {
+    "command": "go back",
+    "actionType": "browser_nav",
+    "timestamp": 1623456798000,
+    "source": "claude",
+    "isCorrect": true
+  },
+  {
+    "command": "bookmark this page",
+    "actionType": "bookmark_page",
+    "timestamp": 1623456799000,
+    "source": "user",
+    "isCorrect": true
+  },
+  {
+    "command": "type hello in the search",
+    "actionType": "type_into",
+    "timestamp": 1623456800000,
+    "source": "claude",
+    "isCorrect": true
+  },
+  {
+    "command": "submit the form",
+    "actionType": "submit_form",
+    "timestamp": 1623456801000,
+    "source": "user",
+    "isCorrect": true
+  },
+  {
+    "command": "copy this",
+    "actionType": "copy_to_clipboard",
+    "timestamp": 1623456802000,
+    "source": "claude",
+    "isCorrect": true
+  },
+  {
+    "command": "auto scroll",
+    "actionType": "auto_scroll",
+    "timestamp": 1623456803000,
+    "source": "user",
+    "isCorrect": true
+  },
+  {
+    "command": "start a timer for 25 minutes",
+    "actionType": "focus_timer",
+    "timestamp": 1623456804000,
+    "source": "claude",
+    "isCorrect": true
+  },
+  {
+    "command": "add to my shopping list",
+    "actionType": "shopping_list",
+    "timestamp": 1623456805000,
+    "source": "user",
+    "isCorrect": true
+  },
+  {
+    "command": "play",
+    "actionType": "media_control",
+    "timestamp": 1623456806000,
+    "source": "claude",
+    "isCorrect": true
+  },
+  {
+    "command": "highlight this text",
+    "actionType": "highlight",
+    "timestamp": 1623456807000,
+    "source": "user",
+    "isCorrect": true
+  },
+  {
+    "command": "okay",
+    "actionType": "none",
+    "timestamp": 1623456808000,
+    "source": "claude",
+    "isCorrect": true
+  },
+  {
+    "command": "scroll down",
+    "actionType": "scroll",
+    "timestamp": 1623456809000,
+    "source": "user",
+    "isCorrect": true
+  },
+  {
+    "command": "scroll down",
+    "actionType": "scroll",
+    "timestamp": 1623456810000,
+    "source": "user",
+    "isCorrect": true
+  }
+]

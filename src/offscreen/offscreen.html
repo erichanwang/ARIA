@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>ARIA Offscreen</title>
+  </head>
+  <body>
+    <!--
+      This document is never visible. It exists solely because MV3 forbids
+      getUserMedia()/camera access in the service worker and content scripts.
+      It owns the microphone (and, later, the camera for eye/hand modes),
+      runs Porcupine wake-word detection and Web Speech STT, and relays results
+      to the background SW over the message bus.
+    -->
+    <script type="module" src="./index.ts"></script>
+  </body>
+</html>

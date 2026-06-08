@@ -1,0 +1,17 @@
+node_modules/
+dist/
+*.log
+.DS_Store
+.env
+.vite/
+graphify-out/
+.voice-training/
+public/mediapipe-wasm/
+public/porcupine-model/*.pv
+
+# Markdown: keep important docs, ignore planning docs
+*.md
+!/README.md
+!/TRAINING.md
+!/IMPROVEMENTS.md
+!/log.md

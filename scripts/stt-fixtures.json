@@ -1,0 +1,18 @@
+[
+  { "file": "fixture-01.wav", "text": "Please open GitHub and read the selected text aloud." },
+  { "file": "fixture-02.wav", "text": "Scroll down slowly, then zoom in twice." },
+  { "file": "fixture-03.wav", "text": "Set a focus timer for twenty five minutes." },
+  { "file": "fixture-04.wav", "text": "Add blueberries and milk to my shopping list." },
+  { "file": "fixture-05.wav", "text": "Keep listening while I talk and show the words on screen." },
+  { "file": "fixture-06.wav", "text": "Let me choose which microphone to use." },
+  { "file": "fixture-07.wav", "text": "Please do not change my audio output unless you ask me first." },
+  { "file": "fixture-08.wav", "text": "Open the app quietly in the background." },
+  { "file": "fixture-09.wav", "text": "Show a moving sound wave whenever the microphone is active." },
+  { "file": "fixture-10.wav", "text": "Compare the words I actually said before saving the recording." },
+  { "file": "fixture-11.wav", "text": "Switch to eye tracking mode and help me calibrate each point." },
+  { "file": "fixture-12.wav", "text": "My left eye wink should make a left click." },
+  { "file": "fixture-13.wav", "text": "Search my files for the latest report and read the first paragraph aloud." },
+  { "file": "fixture-14.wav", "text": "Start a twenty minute timer and add milk to my list." },
+  { "file": "fixture-15.wav", "text": "I said the wrong word, so let me correct the transcript." },
+  { "file": "fixture-16.wav", "text": "What did you hear me say?" }
+]

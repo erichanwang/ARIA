@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ARIA</title>
+    <link rel="stylesheet" href="./popup.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="hdr">
+        <div class="logo" id="logo"></div>
+        <div class="hdr-text">
+          <h1 id="agent-name-display">ARIA</h1>
+          <span class="tagline">Adaptive Real-time Intelligent Agent</span>
+        </div>
+        <label class="switch" title="Enable agent">
+          <input type="checkbox" id="toggle" />
+          <span class="slider"></span>
+        </label>
+      </header>
+
+      <!-- Status strip -->
+      <section class="status-card">
+        <div class="status-row">
+          <span class="label">State</span>
+          <span class="value" id="state-pill">idle</span>
+        </div>
+        <div class="status-row">
+          <span class="label">Mode</span>
+          <span class="value" id="mode-pill">voice</span>
+        </div>
+        <div class="status-row">
+          <span class="label">Confidence</span>
+          <span class="value" id="conf-pill">—</span>
+        </div>
+        <div class="status-row">
+          <span class="label">Wake word</span>
+          <span class="value" id="wake-pill">—</span>
+        </div>
+      </section>
+
+      <!-- Tab bar -->
+      <nav class="tab-bar" role="tablist">
+        <button class="tab-btn active" data-tab="general" role="tab">General</button>
+        <button class="tab-btn" data-tab="voice" role="tab">Voice</button>
+        <button class="tab-btn" data-tab="eye" role="tab">Eye</button>
+        <button class="tab-btn" data-tab="hand" role="tab">Hand</button>
+        <button class="tab-btn" data-tab="tasks" role="tab">Tasks</button>
+        <button class="tab-btn" data-tab="history" role="tab">History</button>
+        <button class="tab-btn" data-tab="macros" role="tab">Macros</button>
+        <button class="tab-btn" data-tab="ai" role="tab">AI</button>
+      </nav>
+
+      <!-- Tab: General -->
+      <section class="tab-panel active" id="tab-general">
+        <div class="field">
+          <label for="agent-name">Agent name</label>
+          <input type="text" id="agent-name" placeholder="ARIA" />
+        </div>
+        <div class="field">
+          <label for="api-key">Anthropic API key</label>
+          <div class="key-row">
+            <input type="password" id="api-key" placeholder="sk-ant-…" autocomplete="off" spellcheck="false" />
+            <button id="toggle-key" class="ghost" title="Show / hide">👁</button>
+            <button id="test-api-key" class="ghost" title="Test connection">Test</button>
+          </div>
+          <p class="hint" id="api-key-hint">Stored only in local extension storage. Never leaves this device.</p>
+        </div>
+        <div class="field">
+          <label for="pv-key">Picovoice access key <span class="opt">(wake word)</span></label>
+          <input type="password" id="pv-key" placeholder="Picovoice access key" autocomplete="off" spellcheck="false" />
+          <p class="hint">Free from console.picovoice.ai. Wake word runs locally.</p>
+        </div>
+        <div class="field">
+          <label for="mode">Input mode</label>
+          <select id="mode">
+            <option value="voice">Voice (Claude)</option>
+            <option value="eye">Eye / head tracking</option>
+            <option value="hand">Hand gestures</option>
+            <option value="manual">Manual (off)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="conf-threshold">Confidence threshold <span class="opt" id="conf-thresh-val">60%</span></label>
+          <input type="range" id="conf-threshold" min="0" max="1" step="0.05" value="0.6" />
+          <p class="hint">Actions below this certainty show a "not sure" prompt before executing.</p>
+        </div>
+        <div class="field toggle-row">
+          <label for="confirm-acting">Confirm before acting</label>
+          <label class="switch sm"><input type="checkbox" id="confirm-acting" /><span class="slider"></span></label>
+        </div>
+        <div class="field toggle-row">
+          <label for="safe-mode">Safe mode <span class="opt">(confirm destructive actions)</span></label>
+          <label class="switch sm"><input type="checkbox" id="safe-mode" /><span class="slider"></span></label>
+        </div>
+        <div class="field">
+          <label for="accent-color">Accent color</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input type="color" id="accent-color" value="#ff2b2b" style="width:40px;height:30px;border:none;border-radius:6px;padding:2px;cursor:pointer;background:none" />
+            <span class="hint" style="margin:0">Cursor, HUD indicator, and trail color.</span>
+          </div>
+        </div>
+        <div class="field">
+          <label for="reading-level">Response reading level</label>
+          <select id="reading-level">
+            <option value="simple">Simple — short sentences, no jargon</option>
+            <option value="standard" selected>Standard — clear and natural</option>
+            <option value="advanced">Advanced — technical detail allowed</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Voice shorthands</label>
+          <p class="hint">Say "trigger" and ARIA expands it to the full phrase.</p>
+          <div id="shorthand-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:6px"></div>
+          <button class="ghost sm" id="add-shorthand">+ Add shorthand</button>
+        </div>
+      </section>
+
+      <!-- Tab: Voice -->
+      <section class="tab-panel" id="tab-voice">
+        <div class="field">
+          <label for="wake-word">Wake phrase</label>
+          <input type="text" id="wake-word" placeholder="Hey ARIA" autocomplete="off" spellcheck="false" />
+          <p class="hint">Say this to activate the agent. Uses SpeechRecognition if no Picovoice key is set.</p>
+        </div>
+        <div class="field">
+          <label for="tts-voice">TTS voice</label>
+          <select id="tts-voice"><option value="">System default</option></select>
+        </div>
+        <div class="field">
+          <label for="tts-rate">Speech rate <span class="opt" id="tts-rate-val">1.0×</span></label>
+          <input type="range" id="tts-rate" min="0.5" max="2" step="0.1" value="1" />
+        </div>
+        <div class="field">
+          <label for="tts-volume">Volume <span class="opt" id="tts-vol-val">100%</span></label>
+          <input type="range" id="tts-volume" min="0" max="1" step="0.05" value="1" />
+        </div>
+        <div class="field toggle-row">
+          <label for="earcons">Sound effects (earcons)</label>
+          <label class="switch sm"><input type="checkbox" id="earcons" checked /><span class="slider"></span></label>
+        </div>
+      </section>
+
+      <!-- Tab: Eye -->
+      <section class="tab-panel" id="tab-eye">
+        <div class="field">
+          <label for="eye-sensitivity">Sensitivity <span class="opt" id="eye-sens-val">1.0×</span></label>
+          <input type="range" id="eye-sensitivity" min="0.5" max="2" step="0.1" value="1" />
+        </div>
+        <div class="field">
+          <label for="eye-smoothing">Smoothing (α) <span class="opt" id="eye-smooth-val">0.35</span></label>
+          <input type="range" id="eye-smoothing" min="0.05" max="0.9" step="0.05" value="0.35" />
+          <p class="hint">Higher = snappier. Lower = smoother (more lag).</p>
+        </div>
+        <div class="field">
+          <label for="brow-threshold">Brow raise threshold <span class="opt" id="brow-thresh-val">15 px</span></label>
+          <input type="range" id="brow-threshold" min="5" max="40" step="1" value="15" />
+        </div>
+        <div class="field">
+          <label for="dwell-time">Dwell click time <span class="opt" id="dwell-val">800 ms</span></label>
+          <input type="range" id="dwell-time" min="300" max="2000" step="100" value="800" />
+        </div>
+      </section>
+
+      <!-- Tab: Hand -->
+      <section class="tab-panel" id="tab-hand">
+        <div class="field">
+          <label for="hand-sens">Sensitivity <span class="opt" id="hand-sens-val">1.0×</span></label>
+          <input type="range" id="hand-sens" min="0.5" max="2" step="0.1" value="1" />
+        </div>
+      </section>
+
+      <!-- Tab: Tasks -->
+      <section class="tab-panel" id="tab-tasks">
+        <div class="tasks">
+          <span class="label">Launch task module</span>
+          <div class="task-row">
+            <button class="task-btn" id="task-mcq">MCQ Quiz</button>
+            <button class="task-btn" id="task-trivia">Trivia</button>
+            <button class="task-btn" id="task-formfill">Form Fill</button>
+            <button class="task-btn" id="task-summarize">Summarize</button>
+            <button class="task-btn" id="task-a11y">A11y Audit</button>
+            <button class="task-btn" id="task-screenshot">Describe</button>
+          </div>
+        </div>
+        <div class="recent">
+          <div class="recent-row">
+            <span class="label">Last command</span>
+            <span class="value mono" id="last-command">—</span>
+          </div>
+          <div class="recent-row">
+            <span class="label">Last action</span>
+            <span class="value mono" id="last-action">—</span>
+          </div>
+          <div class="recent-row error-row" id="error-row" hidden>
+            <span class="label">Error</span>
+            <span class="value mono" id="last-error">—</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab: History -->
+      <section class="tab-panel" id="tab-history">
+        <div class="hist-toolbar">
+          <span class="label">Command history</span>
+          <button class="ghost sm" id="clear-history">Clear</button>
+          <button class="ghost sm" id="export-history">Export JSON</button>
+        </div>
+        <ol class="hist-list" id="hist-list">
+          <li class="hist-empty">No commands yet this session.</li>
+        </ol>
+      </section>
+
+      <!-- Tab: Macros -->
+      <section class="tab-panel" id="tab-macros">
+        <div class="hist-toolbar">
+          <span class="label">Saved macros</span>
+        </div>
+        <p class="hint" style="margin:8px 0 10px">Voice: <em>"start recording"</em> → <em>"stop recording [name]"</em> → <em>"run [name]"</em></p>
+        <ol class="hist-list" id="macro-list">
+          <li class="hist-empty">No macros saved yet.</li>
+        </ol>
+      </section>
+
+      <!-- Tab: AI (offline neural network) -->
+      <section class="tab-panel" id="tab-ai">
+        <div class="status-card" style="margin-bottom:10px">
+          <div class="status-row">
+            <span class="label">Model status</span>
+            <span class="value" id="nn-status">—</span>
+          </div>
+          <div class="status-row">
+            <span class="label">Training examples</span>
+            <span class="value" id="nn-examples">—</span>
+          </div>
+          <div class="status-row">
+            <span class="label">Last trained</span>
+            <span class="value" id="nn-trained">never</span>
+          </div>
+          <div class="status-row">
+            <span class="label">Accuracy</span>
+            <span class="value" id="nn-accuracy">—</span>
+          </div>
+        </div>
+        <p class="hint">ARIA automatically records successful commands as training data. Train the model to enable offline voice control without an API key.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+          <button class="task-btn" id="nn-train">Train model</button>
+          <button class="task-btn" id="nn-clear">Clear data</button>
+        </div>
+        <p class="hint" id="nn-log" style="color:#9aa0aa;min-height:16px"></p>
+      </section>
+
+      <div class="settings-io">
+        <button class="ghost sm" id="export-settings">Export settings</button>
+        <button class="ghost sm" id="import-settings">Import settings</button>
+        <input type="file" id="import-file" accept=".json" style="display:none" />
+      </div>
+
+      <footer class="ftr">
+        <span class="dot" id="conn-dot"></span>
+        <span id="conn-text">disabled</span>
+      </footer>
+    </div>
+    <script type="module" src="./popup.ts"></script>
+  </body>
+</html>

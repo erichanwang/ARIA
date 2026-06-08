@@ -1,0 +1,26 @@
+{
+  "name": "aria-desktop",
+  "productName": "ARIA",
+  "version": "0.1.0",
+  "description": "ARIA Desktop — offline-capable voice assistant overlay powered by a local neural network.",
+  "main": "dist/main.js",
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc && tsc -p tsconfig.renderer.json && vite build",
+    "start": "npm run build && electron .",
+    "dev": "npm run build && electron ."
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@huggingface/transformers": "^4.2.0",
+    "@mediapipe/tasks-vision": "^0.10.14",
+    "@tensorflow/tfjs": "^4.22.0"
+  },
+  "devDependencies": {
+    "@types/electron": "^1.4.38",
+    "@types/node": "^20.0.0",
+    "electron": "^42.4.0",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.2"
+  }
+}

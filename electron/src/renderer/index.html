@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ARIA Desktop</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --window: #242424;
+      --header: #303030;
+      --surface: #2d2d2d;
+      --control: #383838;
+      --control-hover: #454545;
+      --control-active: #2a2a2a;
+      --border: rgba(255, 255, 255, 0.12);
+      --border-strong: rgba(255, 255, 255, 0.2);
+      --text: #ffffff;
+      --text-secondary: #c0bfbc;
+      --text-muted: #9a9996;
+      --accent: #e95420;
+      --accent-hover: #f26735;
+      --accent-soft: rgba(233, 84, 32, 0.18);
+      --success: #57e389;
+      --info: #62a0ea;
+      --radius-window: 12px;
+      --radius-control: 7px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: transparent;
+      font-family: Ubuntu, Cantarell, system-ui, sans-serif;
+      font-size: 13px;
+      line-height: 1.35;
+      -webkit-app-region: drag;
+      user-select: none;
+    }
+
+    #overlay {
+      width: 460px;
+      background: var(--window);
+      border: 1px solid rgba(0, 0, 0, 0.45);
+      border-radius: var(--radius-window);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow: hidden;
+      box-shadow: 0 12px 34px rgba(0, 0, 0, 0.42), 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    /* header row */
+    #header {
+      display: flex;
+      align-items: center;
+      min-height: 46px;
+      gap: 9px;
+      padding: 7px 8px 7px 12px;
+      background: var(--header);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.45);
+      -webkit-app-region: drag;
+    }
+    #logo-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--text-muted); flex-shrink: 0; transition: background 180ms ease-out, box-shadow 180ms ease-out;
+    }
+    #app-icon { width: 24px; height: 24px; flex-shrink: 0; border-radius: 6px; }
+    #logo-dot.listening { background: var(--info); box-shadow: 0 0 0 3px rgba(98, 160, 234, 0.16); }
+    #logo-dot.thinking  { background: #c061cb; }
+    #logo-dot.acting    { background: var(--success); }
+    h1 { font-size: 14px; font-weight: 600; letter-spacing: 0; }
+
+    #mode-pills {
+      display: flex;
+      gap: 2px;
+      margin-left: auto;
+      padding: 2px;
+      border-radius: 9px;
+      background: rgba(0, 0, 0, 0.22);
+      -webkit-app-region: no-drag;
+    }
+    .mode-pill {
+      min-height: 26px;
+      padding: 3px 9px;
+      border: 0;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text-secondary);
+      font: inherit;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 160ms ease-out, color 160ms ease-out;
+      -webkit-app-region: no-drag;
+    }
+    .mode-pill:hover { background: rgba(255, 255, 255, 0.08); color: var(--text); }
+    .mode-pill.active { background: var(--accent); color: #ffffff; }
+
+    #minimize-btn, #close-btn {
+      width: 28px; height: 28px; min-height: 28px;
+      border: 0; border-radius: 50%;
+      background: transparent; color: var(--text-secondary); font-size: 15px;
+      padding: 0; cursor: pointer; -webkit-app-region: no-drag;
+    }
+    #minimize-btn:hover { background: rgba(255, 255, 255, 0.1); color: var(--text); }
+    #close-btn:hover { background: #c01c28; color: #ffffff; }
+
+    /* status / transcript */
+    #status-text { margin: 2px 16px 0; font-size: 12px; color: var(--text-secondary); min-height: 16px; }
+    #transcript-label { margin: 0 16px -5px; font-size: 11px; font-weight: 600; color: var(--text-secondary); }
+    #transcript  {
+      margin: 0 16px;
+      font-size: 12px; color: var(--text); min-height: 52px; max-height: 86px;
+      line-height: 1.45; white-space: pre-wrap; overflow-y: auto;
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-control); padding: 8px 10px;
+      user-select: text; -webkit-app-region: no-drag;
+    }
+    #transcript:empty::before { content: 'Listening results appear here'; color: var(--text-muted); }
+    #result { margin: 0 16px; font-size: 12px; color: var(--text-secondary); min-height: 17px; line-height: 1.4; }
+
+    /* camera panel */
+    #camera-panel {
+      display: none;
+      position: relative;
+      height: 150px;
+      margin: 0 16px;
+      background: #111111;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-control);
+      overflow: hidden;
+    }
+    #camera-panel.visible { display: block; }
+    #cam-video {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: cover; opacity: 0.7; transform: scaleX(-1);
+    }
+    #cam-canvas {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1);
+    }
+    #cam-label {
+      position: absolute; bottom: 5px; left: 8px;
+      font-size: 10px; color: rgba(255,255,255,0.6);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.9);
+    }
+    #gaze-dot {
+      position: fixed; width: 18px; height: 18px;
+      border-radius: 50%; border: 2px solid rgba(255,43,43,0.7);
+      background: rgba(255,43,43,0.2); pointer-events: none;
+      transform: translate(-50%,-50%); transition: left 0.05s, top 0.05s;
+      display: none; z-index: 99999;
+    }
+
+    /* controls */
+    #controls {
+      display: flex; gap: 7px; flex-wrap: wrap;
+      padding: 2px 16px 16px;
+      -webkit-app-region: no-drag;
+    }
+    #input-method-row, #microphone-row, #typed-command-row {
+      width: 100%; display: grid; grid-template-columns: 92px minmax(0, 1fr) auto; align-items: center; gap: 8px;
+      -webkit-app-region: no-drag;
+    }
+    #typed-command-row { grid-template-columns: minmax(0, 1fr) auto; }
+    #input-method-row label, #microphone-row label { font-size: 12px; color: var(--text-secondary); }
+    #input-method, #microphone-device, #command-input {
+      min-height: 32px;
+      background: var(--control); border: 1px solid var(--border);
+      border-radius: var(--radius-control); color: var(--text); font: inherit; font-size: 12px; padding: 5px 9px;
+      -webkit-app-region: no-drag;
+    }
+    #input-method:focus, #microphone-device:focus, #command-input:focus, #api-key-input:focus, textarea:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: 1px;
+      border-color: transparent;
+    }
+    #input-method, #microphone-device { flex: 1; min-width: 0; }
+    #input-method option, #microphone-device option { background: var(--control); }
+    .mic-waveform {
+      width: 62px; height: 22px; display: flex; align-items: center; justify-content: center;
+      gap: 3px; color: var(--text-muted); flex-shrink: 0;
+    }
+    .mic-waveform span {
+      width: 3px; height: 18px; border-radius: 3px; background: currentColor;
+      transform: scaleY(0.16); transform-origin: center;
+      transition: transform 80ms ease-out, color 160ms ease-out;
+    }
+    .mic-waveform.active { color: var(--accent); }
+    #voice-training-waveform { width: 100%; height: 34px; gap: 5px; }
+    #voice-training-waveform span { width: 4px; height: 30px; }
+    @media (prefers-reduced-motion: reduce) {
+      .mic-waveform span { transition: none; }
+    }
+    #command-input { flex: 1; min-width: 0; }
+    button {
+      min-height: 32px;
+      background: var(--control); border: 1px solid var(--border);
+      border-radius: var(--radius-control); color: var(--text); font: inherit; font-size: 12px; font-weight: 500;
+      padding: 5px 11px; cursor: pointer; transition: background 160ms ease-out, border-color 160ms ease-out;
+      -webkit-app-region: no-drag;
+    }
+    button:hover  { background: var(--control-hover); border-color: var(--border-strong); }
+    button:active { background: var(--control-active); }
+    button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+    button:disabled { opacity: 0.45; cursor: default; }
+    button.active { background: var(--accent-soft); border-color: rgba(233, 84, 32, 0.72); }
+    #speak-btn, #run-command-btn, #voice-training-record, #voice-training-save, #eye-training-capture, #gest-capture {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
+    }
+    #speak-btn:hover, #run-command-btn:hover, #voice-training-record:hover, #voice-training-save:hover,
+    #eye-training-capture:hover, #gest-capture:hover { background: var(--accent-hover); }
+
+    #api-key-input {
+      flex: 1 0 100%; width: 100%; min-width: 0;
+      min-height: 32px;
+      background: var(--control); border: 1px solid var(--border);
+      border-radius: var(--radius-control); color: var(--text); font: inherit; font-size: 12px;
+      padding: 5px 9px; -webkit-app-region: no-drag;
+    }
+    #api-key-input::placeholder { color: var(--text-muted); }
+
+    /* calibration overlay */
+    #cal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(36, 36, 36, 0.97); z-index: 100000;
+      flex-direction: column; align-items: center; justify-content: center;
+      color: var(--text); font-family: inherit;
+    }
+    #cal-overlay.visible { display: flex; }
+    #cal-dot {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--accent); box-shadow: 0 0 0 5px rgba(233, 84, 32, 0.2);
+      transition: left 0.6s, top 0.6s; position: fixed;
+      transform: translate(-50%, -50%);
+    }
+    #cal-text { margin-top: 60px; font-size: 14px; color: var(--text-secondary); }
+
+    /* gesture training overlay */
+    #gest-overlay {
+      display: none; position: fixed; inset: 0;
+      background: var(--window); z-index: 100001;
+      flex-direction: column; align-items: center; justify-content: center;
+      color: var(--text); font-family: inherit; gap: 12px; padding: 18px;
+    }
+    #gest-overlay.visible { display: flex; }
+    #gest-overlay h2 { font-size: 16px; }
+    #gest-overlay p  { font-size: 13px; color: var(--text-secondary); text-align: center; max-width: 340px; }
+    #gest-preview { width: 280px; height: 150px; object-fit: cover; border: 1px solid var(--border); border-radius: var(--radius-control); transform: scaleX(-1); background: #111111; }
+    #gest-label { font-size: 22px; font-weight: 600; color: var(--success); }
+    #gest-progress { font-size: 12px; color: var(--text-muted); }
+    #gest-close { margin-top: 8px; }
+    #eye-training-overlay {
+      display: none; position: fixed; inset: 0; z-index: 100002;
+      background: var(--window); color: var(--text);
+      padding: 20px; flex-direction: column; align-items: center; gap: 10px;
+      -webkit-app-region: no-drag;
+    }
+    #eye-training-overlay.visible { display: flex; }
+    #eye-training-overlay h2 { font-size: 16px; }
+    #eye-training-preview {
+      width: 280px; height: 150px; object-fit: cover; border-radius: 10px;
+      transform: scaleX(-1); background: #111111; border: 1px solid var(--border);
+    }
+    #eye-training-instruction { font-size: 14px; text-align: center; line-height: 1.35; max-width: 360px; }
+    #eye-training-progress { width: 280px; accent-color: #2b7fff; }
+    #eye-training-status { font-size: 11px; color: var(--text-muted); min-height: 15px; }
+    #voice-training-overlay {
+      display: none; position: fixed; inset: 0; z-index: 100002;
+      background: var(--window); color: var(--text);
+      padding: 22px; flex-direction: column; gap: 12px;
+      overflow: hidden;
+      -webkit-app-region: no-drag;
+    }
+    #voice-training-overlay.visible { display: flex; }
+    #voice-training-overlay h2 { font-size: 16px; }
+    #voice-training-progress, #voice-training-status { font-size: 11px; color: var(--text-muted); }
+    #voice-training-prompt {
+      font-size: 18px; line-height: 1.45; user-select: text;
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-control); padding: 14px;
+    }
+    #voice-training-heard { min-height: 42px; font-size: 12px; color: var(--text-secondary); line-height: 1.4; white-space: pre-wrap; }
+    #voice-training-actual-label { font-size: 11px; color: var(--text-secondary); }
+    #voice-training-actual {
+      width: 100%; min-height: 52px; resize: none; overflow: hidden; padding: 8px 10px;
+      border: 1px solid var(--border); border-radius: var(--radius-control);
+      background: var(--control); color: var(--text); font: inherit;
+      user-select: text; -webkit-app-region: no-drag;
+    }
+    #voice-training-actual:disabled { opacity: 0.5; }
+    #voice-training-controls { display: flex; gap: 7px; flex-wrap: wrap; margin-top: auto; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Gaze cursor dot (shown on screen during eye mode) -->
+  <div id="gaze-dot"></div>
+
+  <!-- Gaze calibration overlay -->
+  <div id="cal-overlay">
+    <div id="cal-dot"></div>
+    <p id="cal-text">Look at the red dot and hold still...</p>
+  </div>
+
+  <!-- Gesture training overlay -->
+  <div id="gest-overlay">
+    <h2>Personalize Hand Controls</h2>
+    <canvas id="gest-preview" width="320" height="180"></canvas>
+    <p id="gest-instruction">Center one hand in the camera.</p>
+    <div id="gest-label">-</div>
+    <div id="gest-progress">0 / 0 gestures</div>
+    <div>
+      <button id="gest-capture">Capture gesture</button>
+      <button id="gest-close">Cancel</button>
+    </div>
+  </div>
+
+  <div id="eye-training-overlay">
+    <h2>Personalize Wink Controls</h2>
+    <canvas id="eye-training-preview" width="320" height="180"></canvas>
+    <div id="eye-training-instruction">Keep your face centered in even light.</div>
+    <progress id="eye-training-progress" max="1" value="0"></progress>
+    <div id="eye-training-status"></div>
+    <div>
+      <button id="eye-training-capture">Capture open eyes</button>
+      <button id="eye-training-cancel">Cancel</button>
+    </div>
+  </div>
+
+  <div id="voice-training-overlay">
+    <h2>Build Voice Training Data</h2>
+    <div id="voice-training-progress"></div>
+    <div id="voice-training-prompt"></div>
+    <div id="voice-training-status">Read the text naturally and clearly.</div>
+    <div id="voice-training-waveform" class="mic-waveform" role="img" aria-label="Microphone inactive">
+      <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <div id="voice-training-heard"></div>
+    <label id="voice-training-actual-label" for="voice-training-actual">Words actually spoken</label>
+    <textarea id="voice-training-actual" disabled></textarea>
+    <div id="voice-training-controls">
+      <button id="voice-training-record">Record</button>
+      <button id="voice-training-stop" disabled>Stop and compare</button>
+      <button id="voice-training-save" disabled>Save recording</button>
+      <button id="voice-training-next">Skip</button>
+      <button id="voice-training-folder">Open folder</button>
+      <button id="voice-training-done">Done</button>
+    </div>
+  </div>
+
+  <div id="overlay">
+    <div id="header">
+      <img id="app-icon" src="../../../public/icons/icon32.png" alt="" />
+      <div id="logo-dot"></div>
+      <h1>ARIA Desktop</h1>
+      <div id="mode-pills">
+        <button type="button" class="mode-pill active" data-mode="voice" aria-pressed="true">Voice</button>
+        <button type="button" class="mode-pill" data-mode="eye" aria-pressed="false">Eye</button>
+        <button type="button" class="mode-pill" data-mode="hand" aria-pressed="false">Hand</button>
+      </div>
+      <button id="minimize-btn" title="Minimize">_</button>
+      <button id="close-btn" title="Hide (Ctrl+Space to reopen)">X</button>
+    </div>
+
+    <div id="status-text">Press Ctrl+Space or click Speak to activate</div>
+    <div id="transcript-label">Voice transcript</div>
+    <div id="transcript"></div>
+    <div id="result"></div>
+
+    <!-- Camera preview (shown in eye/hand mode) -->
+    <div id="camera-panel">
+      <video id="cam-video" autoplay muted playsinline></video>
+      <canvas id="cam-canvas"></canvas>
+      <span id="cam-label">-</span>
+    </div>
+
+    <div id="controls">
+      <div id="input-method-row">
+        <label for="input-method">Speech engine</label>
+        <select id="input-method">
+          <option value="offline">Offline Whisper (recommended)</option>
+          <option value="browser">Browser speech (online)</option>
+          <option value="text">Type commands</option>
+        </select>
+      </div>
+      <div id="microphone-row">
+        <label for="microphone-device">Microphone</label>
+        <select id="microphone-device">
+          <option value="">System default</option>
+        </select>
+        <div id="microphone-waveform" class="mic-waveform" role="img" aria-label="Microphone inactive" title="Live microphone input">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+      <div id="typed-command-row" style="display:none">
+        <input id="command-input" type="text" placeholder="Type a command" />
+        <button id="run-command-btn">Run</button>
+      </div>
+      <button id="speak-btn">Speak</button>
+      <button id="always-listen-btn">Always listen: Off</button>
+      <button id="tts-btn">Voice output: On</button>
+      <button id="pin-panel-btn">Pin to top: Off</button>
+      <button id="camera-toggle-btn">Camera: On</button>
+      <button id="voice-training-btn">Build Voice Dataset</button>
+      <button id="train-nn-btn">Fine-tune NN</button>
+      <button id="calibrate-btn" style="display:none">Calibrate</button>
+      <button id="train-wink-btn" style="display:none">Train Winks</button>
+      <button id="train-gesture-btn" style="display:none">Train Gestures</button>
+      <input id="api-key-input" type="password" placeholder="sk-ant-... (optional, enables cloud)" />
+    </div>
+  </div>
+
+  <script type="module" src="./app.ts"></script>
+</body>
+</html>
