@@ -1,6 +1,6 @@
 /**
  * Form-fill assistant. Enumerates the visible, fillable fields on the page,
- * asks the user for their values (free text), has Claude match values → fields,
+ * asks the user for their values (free text), has Claude match values -> fields,
  * fills them, and asks for confirmation before any submit.
  */
 import type { AgentCursor } from '../cursor';

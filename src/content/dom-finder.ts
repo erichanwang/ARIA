@@ -8,7 +8,7 @@
  *   2. Visible text content matches (button, a, [role=button], label, summary)
  *   3. placeholder / title / value matches (inputs & buttons)
  *   4. name or id attribute matches
- *   5. submit-ish intent ("submit"/"go"/"continue"/"search") → submit control
+ *   5. submit-ish intent ("submit"/"go"/"continue"/"search") -> submit control
  *   6. Closest interactive element to any element whose text matches
  *
  * A learned-target map (click-to-teach) is consulted FIRST so user corrections
@@ -23,7 +23,7 @@
 
 const INTERACTIVE = 'a, button, input, select, textarea, [role="button"], [role="link"], [role="tab"], [role="menuitem"], [onclick], summary, label';
 
-// Session-scoped click-to-teach memory: normalized target → element.
+// Session-scoped click-to-teach memory: normalized target -> element.
 const learned = new Map<string, Element>();
 
 // Short-lived result cache: skip full DOM scan if same target was found <2s ago
@@ -33,7 +33,7 @@ const findCache = new Map<string, FindCacheEntry>();
 const FIND_CACHE_TTL = 2000;
 
 // Per-domain persistent selector cache: restored from storage on first use.
-// Key: `aria.teach.${hostname}` → Record<normalizedTarget, cssSelector>
+// Key: `aria.teach.${hostname}` -> Record<normalizedTarget, cssSelector>
 let persistentLoaded = false;
 const persistentSelectors = new Map<string, string>();
 
@@ -107,7 +107,7 @@ export function findElement(target: string): Element | null {
 
 export function findElementWithTrace(target: string): { el: Element; strategy: FindStrategy } | null {
   ensurePersistentLoaded();
-  const want = norm(target);
+  const want = stripFiller(norm(target));
   if (!want) return null;
 
   // Short-lived result cache.
@@ -167,13 +167,16 @@ export function findElementWithTrace(target: string): { el: Element; strategy: F
   );
   if (byId) return cache1(byId, 'name-id');
 
-  // 5. submit-ish intent.
+  // 5. submit-ish intent. Prefer an explicit type="submit" control; only
+  // fall back to a bare, untyped <button> when it's inside a <form>, since
+  // that's the only context where an untyped button actually defaults to
+  // submit behavior - treating every untyped button on the page as a submit
+  // candidate (regardless of context) was a false-positive magnet on pages
+  // with other plain buttons that have nothing to do with the target intent.
   if (/\b(submit|go|continue|search|next|send|login|sign in)\b/.test(want)) {
-    const submit = candidates.find(
-      (el) =>
-        el.matches('[type="submit"], button[type="submit"]') ||
-        (el.tagName === 'BUTTON' && !el.getAttribute('type')),
-    );
+    const submit =
+      candidates.find((el) => el.matches('[type="submit"], button[type="submit"]')) ??
+      candidates.find((el) => el.tagName === 'BUTTON' && !el.getAttribute('type') && el.closest('form'));
     if (submit) return cache1(submit, 'submit-intent');
   }
 
@@ -324,4 +327,23 @@ function contains(haystack: string | null | undefined, needle: string): boolean 
 
 function norm(s: string): string {
   return s.toLowerCase().replace(/\s+/g, ' ').trim();
+}
+
+// Strategies 1-4 and 6 all match by containment: element text/attribute must
+// CONTAIN `want`. Claude's own system prompt tells it to phrase click
+// targets naturally ("the Sign in button", "the search box"), which wraps
+// the actual on-page text in filler words - making `want` LONGER than the
+// element's text and breaking containment in that direction entirely. Strip
+// a small set of generic leading verbs/articles and trailing UI-noun words
+// from the edges (never past a single remaining word) so "the sign in
+// button" reduces to "sign in" before matching, same as the bare targets
+// this cascade already handles correctly.
+const LEADING_FILLER = new Set(['the', 'a', 'an', 'on', 'click', 'tap', 'press', 'hit', 'choose', 'select']);
+const TRAILING_FILLER = new Set(['button', 'box', 'field', 'link', 'icon', 'tab', 'menu', 'option', 'control', 'checkbox', 'toggle', 'dropdown']);
+
+function stripFiller(want: string): string {
+  let words = want.split(' ');
+  while (words.length > 1 && LEADING_FILLER.has(words[0])) words = words.slice(1);
+  while (words.length > 1 && TRAILING_FILLER.has(words[words.length - 1])) words = words.slice(0, -1);
+  return words.join(' ');
 }

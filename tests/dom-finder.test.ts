@@ -53,7 +53,7 @@ beforeEach(() => {
 /* ---------- strategy 1: aria-label ---------------------------------------- */
 describe('aria-label matching', () => {
   it('finds button by exact aria-label', () => {
-    setBody('<button aria-label="Search">🔍</button>');
+    setBody('<button aria-label="Search">*</button>');
     const el = findElement('search');
     expect(el?.getAttribute('aria-label')).toBe('Search');
   });
@@ -94,7 +94,7 @@ describe('placeholder and title matching', () => {
   });
 
   it('finds button by title attribute', () => {
-    setBody('<button title="Close dialog">✕</button>');
+    setBody('<button title="Close dialog">x</button>');
     expect(findElement('close dialog')).toBeTruthy();
   });
 });
@@ -118,6 +118,49 @@ describe('submit intent matching', () => {
     setBody('<button type="submit">Continue to checkout</button>');
     const el = findElement('submit');
     expect(el?.getAttribute('type')).toBe('submit');
+  });
+
+  it('prefers an explicit type="submit" over an unrelated untyped button', () => {
+    // An untyped <button> only defaults to submit behavior inside a <form>.
+    // A page can have plenty of other untyped buttons that have nothing to
+    // do with the target intent - the fallback must not grab the first one.
+    setBody('<button>Dismiss</button><button type="submit">Continue</button>');
+    const el = findElement('continue');
+    expect(el?.getAttribute('type')).toBe('submit');
+  });
+
+  it('falls back to an untyped button only when it is inside a form', () => {
+    setBody('<button>Dismiss</button><form><button>Go</button></form>');
+    const el = findElement('go');
+    expect(el?.tagName).toBe('BUTTON');
+    expect(el?.closest('form')).toBeTruthy();
+  });
+
+  it('does not match an untyped button outside any form', () => {
+    setBody('<button>Dismiss</button>');
+    expect(findElement('submit')).toBeNull();
+  });
+});
+
+/* ---------- filler-word stripping (Claude's actual target phrasing) ------- */
+describe('filler-word stripping', () => {
+  // Claude's own system prompt tells it to phrase click targets naturally,
+  // e.g. "the Sign in button" / "the search box" - longer than the button's
+  // actual text, which breaks the containment check in strategies 1-4 and 6
+  // unless the wrapper words are stripped first.
+  it('resolves "the X button" to the element whose text is just "X"', () => {
+    setBody('<button>Sign in</button>');
+    expect(findElement('the sign in button')?.tagName).toBe('BUTTON');
+  });
+
+  it('resolves "the X box" via aria-label', () => {
+    setBody('<input aria-label="Search" />');
+    expect(findElement('the search box')).toBeTruthy();
+  });
+
+  it('does not strip a single-word target down to nothing', () => {
+    setBody('<button>Button</button>');
+    expect(findElement('the button')?.tagName).toBe('BUTTON');
   });
 });
 
@@ -264,7 +307,7 @@ describe('shadow DOM', () => {
     setBody('<div id="host"></div>');
     const host = document.querySelector('#host')!;
     const root = host.attachShadow({ mode: 'open' });
-    root.innerHTML = '<button aria-label="Submit order">✓</button>';
+    root.innerHTML = '<button aria-label="Submit order">OK</button>';
     const el = findElement('submit order');
     expect(el?.tagName).toBe('BUTTON');
   });

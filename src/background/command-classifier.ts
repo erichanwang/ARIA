@@ -2,7 +2,7 @@
  * On-device neural classifier for offline command routing.
  * Runs TF.js with the CPU backend (works in MV3 service workers).
  *
- * Architecture: Embedding → GlobalAveragePooling1D → Dense(48) → Dense(N_CLASSES)
+ * Architecture: Embedding -> GlobalAveragePooling1D -> Dense(48) -> Dense(N_CLASSES)
  * Weights are serialised to chrome.storage.local for persistence across SW restarts.
  */
 import '@tensorflow/tfjs-backend-cpu';
@@ -448,8 +448,8 @@ export async function trainClassifier(userExamples: TrainingExample[], config?: 
   }
 
   // Recommend confidence threshold based on validation accuracy
-  // Higher accuracy → more confident threshold (user trusts the model more)
-  // Lower accuracy → more conservative threshold (require user confirmation more often)
+  // Higher accuracy -> more confident threshold (user trusts the model more)
+  // Lower accuracy -> more conservative threshold (require user confirmation more often)
   const recommendedThreshold = Math.max(0.3, Math.min(0.75, 0.5 + (validationAccuracy - 0.5) * 0.5));
 
   await saveWeights(_model);

@@ -64,7 +64,7 @@ export async function openCommandPalette(): Promise<void> {
 
   const hint = document.createElement('div');
   hint.style.cssText = 'padding:6px 14px 8px;font-size:11px;color:#6a737d;border-top:1px solid rgba(255,255,255,0.06)';
-  hint.textContent = 'Enter to send · ↑↓ for history · Escape to close';
+  hint.textContent = 'Enter to send · Up/Down for history · Escape to close';
 
   palette.append(input, suggestions, hint);
   document.documentElement.appendChild(palette);

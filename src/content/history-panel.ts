@@ -23,7 +23,7 @@ export class HistoryPanel {
     this.el.innerHTML = `
       <div class="aria-hp-header">
         <span class="aria-hp-title">History</span>
-        <button class="aria-hp-close" title="Close (Ctrl+Shift+H)">✕</button>
+        <button class="aria-hp-close" title="Close (Ctrl+Shift+H)">x</button>
       </div>
       <ol class="aria-hp-list" id="aria-hp-list"></ol>`;
     root.appendChild(this.el);
@@ -70,7 +70,7 @@ export class HistoryPanel {
 
     const badge = document.createElement('span');
     badge.className = `aria-hp-badge ${entry.success ? 'ok' : 'fail'}`;
-    badge.textContent = entry.success ? '✓' : '✗';
+    badge.textContent = entry.success ? 'OK' : 'FAIL';
 
     const text = document.createElement('div');
     text.className = 'aria-hp-text';
@@ -89,7 +89,7 @@ export class HistoryPanel {
     const redo = document.createElement('button');
     redo.className = 'aria-hp-redo';
     redo.title = 'Redo this command';
-    redo.textContent = '↺';
+    redo.textContent = 'Redo';
     redo.addEventListener('click', () => {
       sendRuntime({ type: 'REDO_COMMAND', target: 'background', entryId: entry.id });
     });
@@ -184,7 +184,7 @@ function injectPanelStyle(root: ShadowRoot): void {
 
     .aria-hp-badge {
       flex-shrink: 0;
-      width: 20px;
+      width: 30px;
       height: 20px;
       border-radius: 50%;
       display: flex;

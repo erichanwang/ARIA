@@ -2,14 +2,14 @@
  * ARIA Desktop renderer - voice + eye + hand control with online RL training.
  *
  *  Modes:
- *   Voice  - speak command → intent NN → action  (Cmd/Ctrl+Shift+Y/N feedback)
- *   Eye    - gaze regression NN → screen cursor + dwell-click
- *   Hand   - gesture classifier NN → cursor move (fingertip) + pinch-click
+ *   Voice  - speak command -> intent NN -> action  (Cmd/Ctrl+Shift+Y/N feedback)
+ *   Eye    - gaze regression NN -> screen cursor + dwell-click
+ *   Hand   - gesture classifier NN -> cursor move (fingertip) + pinch-click
  *
  *  Reinforcement loop:
  *   After any action the last (input, action) pair is held in memory.
- *   Cmd/Ctrl+Shift+Y → positive example recorded → periodic micro-retrain
- *   Cmd/Ctrl+Shift+N → negative example recorded → retrain
+ *   Cmd/Ctrl+Shift+Y -> positive example recorded -> periodic micro-retrain
+ *   Cmd/Ctrl+Shift+N -> negative example recorded -> retrain
  *
  *  All three NNs are trained offline:
  *   Intent  - seed corpus + Claude-confirmed examples + RL corrections
@@ -144,7 +144,7 @@ type GestureClass = typeof GESTURE_CLASSES[number];
 const NUM_GESTURE = GESTURE_CLASSES.length;
 const HAND_IN = 63; const GAZE_IN = 5;
 
-// Gesture → voice command string (drives the intent classifier)
+// Gesture -> voice command string (drives the intent classifier)
 const GESTURE_COMMANDS: Partial<Record<GestureClass, string>> = {
   pinch:      'click',
   open_palm:  'stop',
@@ -245,7 +245,7 @@ function applyWeights(m: tf.LayersModel, s: W[]): boolean {
 }
 
 /* ══════════════════════════════════════════════
-   INTENT NN (voice command → action class)
+   INTENT NN (voice command -> action class)
    ══════════════════════════════════════════════ */
 
 let intentModel: tf.LayersModel | null = null;
@@ -327,7 +327,7 @@ function storeVoiceExample(command: string, actionType: string, isCorrect = true
 }
 
 /* ══════════════════════════════════════════════
-   GAZE REGRESSION NN (iris/head → screen coords)
+   GAZE REGRESSION NN (iris/head -> screen coords)
    ══════════════════════════════════════════════ */
 
 let gazeModel: tf.LayersModel | null = null;
@@ -598,7 +598,7 @@ function processPersonalWink(features: EyeFeatures): void {
 }
 
 /* ══════════════════════════════════════════════
-   GESTURE CLASSIFIER NN (hand landmarks → gesture)
+   GESTURE CLASSIFIER NN (hand landmarks -> gesture)
    ══════════════════════════════════════════════ */
 
 let gestureModel: tf.LayersModel | null = null;
@@ -791,7 +791,7 @@ function scheduleRetrain(): void {
 }
 
 /* ══════════════════════════════════════════════
-   CURSOR OVERLAY (gaze / fingertip → screen coords)
+   CURSOR OVERLAY (gaze / fingertip -> screen coords)
    ══════════════════════════════════════════════ */
 
 let cursorX = 0; let cursorY = 0;
@@ -1051,7 +1051,7 @@ async function processHandResult(result: HandLandmarkerResult, ctx: CanvasRender
   updateDwell(nsx * window.screen.width, nsy * window.screen.height);
   moveCursor(nsx, nsy, 'hand');
 
-  // Detect pinch (thumb tip #4 ↔ index tip #8 distance < threshold)
+  // Detect pinch (thumb tip #4 <-> index tip #8 distance < threshold)
   const thumb = lms[4];
   const pinchDist = Math.hypot(thumb.x - tip.x, thumb.y - tip.y);
   const isPinching = pinchDist < 0.06;
@@ -1067,7 +1067,7 @@ async function processHandResult(result: HandLandmarkerResult, ctx: CanvasRender
     pinchCandidateSince = 0;
   }
 
-  // Classify other gestures → voice-style commands
+  // Classify other gestures -> voice-style commands
   const gest = await classifyGesture(latestHandFeatures);
   const stableGesture = gest && gest.confidence >= 0.65 ? gest.gesture : null;
   if (stableGesture !== gestureCandidate) {
@@ -1800,6 +1800,9 @@ function stopListening(discardPending = false): void {
    ══════════════════════════════════════════════ */
 
 async function callClaude(key: string, cmd: string): Promise<{ action: string; speech: string }> {
+  // Unconditionally remote: this Electron app has no local/inferenceProvider
+  // concept (unlike the extension's src/background), so there is no setting
+  // this could be silently ignoring.
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },

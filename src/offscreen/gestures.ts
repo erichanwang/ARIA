@@ -2,15 +2,15 @@
  * Hand gesture classifier. Maps 21 MediaPipe hand landmarks to one of ARIA's
  * recognized gestures using simple geometric heuristics:
  *
- *   pinch        → thumb + index tips close            → click
- *   open_palm    → 4+ fingers extended + spread        → pause
- *   fist         → all fingers curled                  → hold
- *   two_finger   → index + middle extended, others in  → scroll
- *   point        → index extended only                 → move cursor
- *   peace        → index + middle extended + spread    → right-click
- *   thumbs_up    → thumb extended up, fingers curled   → confirm
- *   thumbs_down  → thumb extended down, fingers curled → cancel
- *   three_finger → index + middle + ring extended      → task picker
+ *   pinch        -> thumb + index tips close            -> click
+ *   open_palm    -> 4+ fingers extended + spread        -> pause
+ *   fist         -> all fingers curled                  -> hold
+ *   two_finger   -> index + middle extended, others in  -> scroll
+ *   point        -> index extended only                 -> move cursor
+ *   peace        -> index + middle extended + spread    -> right-click
+ *   thumbs_up    -> thumb extended up, fingers curled   -> confirm
+ *   thumbs_down  -> thumb extended down, fingers curled -> cancel
+ *   three_finger -> index + middle + ring extended      -> task picker
  */
 import type { NormalizedLandmark } from '@mediapipe/tasks-vision';
 import type { HandGesture } from '@shared/messages';
@@ -28,7 +28,7 @@ const INDEX_TIP = 8;
 
 export function classifyGesture(lm: NormalizedLandmark[]): HandGesture {
   const wrist = lm[WRIST];
-  const handSize = dist(lm[WRIST], lm[9]); // wrist → middle MCP
+  const handSize = dist(lm[WRIST], lm[9]); // wrist -> middle MCP
 
   const ext = {
     index:  isExtended(lm, FINGERS.index,  wrist),

@@ -109,7 +109,7 @@ function displayAuditReport(issues: AuditIssue[]): void {
   title.style.cssText = 'font-size:11px;text-transform:uppercase;letter-spacing:0.7px;color:#9aa0aa;font-weight:700';
   title.textContent = 'Accessibility Audit';
   const closeBtn = document.createElement('button');
-  closeBtn.textContent = '✕';
+  closeBtn.textContent = 'x';
   closeBtn.style.cssText = 'background:none;border:none;color:#9aa0aa;cursor:pointer;font-size:14px;padding:0';
   closeBtn.addEventListener('click', () => panel.remove());
   header.append(title, closeBtn);
@@ -118,7 +118,7 @@ function displayAuditReport(issues: AuditIssue[]): void {
   if (issues.length === 0) {
     const ok = document.createElement('p');
     ok.style.cssText = 'color:#4ade80;margin:0;font-weight:500';
-    ok.textContent = '✓ No issues found!';
+    ok.textContent = 'OK No issues found!';
     panel.appendChild(ok);
   } else {
     for (const issue of issues) {

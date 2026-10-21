@@ -1,7 +1,7 @@
 /**
  * Voice Clipboard Manager
  * Named snippets stored in chrome.storage.local.
- * "remember this as my address" → stores; "paste my address" → types.
+ * "remember this as my address" -> stores; "paste my address" -> types.
  */
 
 const STORAGE_KEY = 'aria.voiceClips';

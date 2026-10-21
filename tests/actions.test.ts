@@ -110,7 +110,7 @@ describe('parseAgentAction — invalid inputs', () => {
   });
 
   it('rejects missing speech field', () => {
-    // speech is missing entirely → Zod issues "Required" (not the custom min message)
+    // speech is missing entirely -> Zod issues "Required" (not the custom min message)
     const r = parseAgentAction('{"action":"click","target":"btn","confidence":0.9}');
     expect(r.ok).toBe(false);
     if (!r.ok) expect(r.error.length).toBeGreaterThan(0);

@@ -188,7 +188,7 @@ export class SmoothPursuitCalibration {
   }
 }
 
-/** Apply a solved transform to a gaze feature → screen pixel coordinate. */
+/** Apply a solved transform to a gaze feature -> screen pixel coordinate. */
 export function applyTransform(t: GazeTransform, gaze: { x: number; y: number }): { x: number; y: number } {
   return {
     x: t.ax * gaze.x + t.bx * gaze.y + t.cx,

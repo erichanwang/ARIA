@@ -2,10 +2,10 @@
  * Earcon system: subtle audio cues for agent lifecycle events.
  * Uses Web Audio API (no network requests, no files).
  *
- *   wake      → rising two-tone chime (agent woke up)
- *   complete  → soft click / tick (action done)
- *   error     → descending buzz (something failed)
- *   listening → short low tone (mic open)
+ *   wake      -> rising two-tone chime (agent woke up)
+ *   complete  -> soft click / tick (action done)
+ *   error     -> descending buzz (something failed)
+ *   listening -> short low tone (mic open)
  */
 
 let ctx: AudioContext | null = null;
@@ -31,7 +31,7 @@ export function playEarcon(type: EarconType, enabled = true): void {
   }
 }
 
-/** Rising two-tone chime: C5 → E5 */
+/** Rising two-tone chime: C5 -> E5 */
 function playWake(): void {
   const ac = getCtx();
   tone(ac, 523.25, 0, 0.08, 'sine', 0.18);

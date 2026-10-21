@@ -1,6 +1,6 @@
 /**
  * Synthetic click dispatch, shared by the DOM executor (voice) and the eye/hand
- * drivers. Fires the full pointer→mouse→click sequence plus the native
+ * drivers. Fires the full pointer->mouse->click sequence plus the native
  * .click() so it works on both native controls and JS-driven widgets.
  */
 export function clickElement(el: Element): void {

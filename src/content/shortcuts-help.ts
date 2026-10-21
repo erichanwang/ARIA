@@ -17,15 +17,15 @@ const SHORTCUTS = [
 
 const GESTURES = [
   { gesture: 'Pinch', desc: 'Left click' },
-  { gesture: 'Peace ✌', desc: 'Right click (context menu)' },
+  { gesture: 'Peace', desc: 'Right click (context menu)' },
   { gesture: 'Open palm', desc: 'Pause cursor' },
   { gesture: 'Two fingers — move', desc: 'Scroll up / down' },
-  { gesture: 'Swipe ←', desc: 'Navigate back' },
-  { gesture: 'Swipe →', desc: 'Navigate forward' },
-  { gesture: 'Swipe ↑', desc: 'Scroll up (large)' },
-  { gesture: 'Swipe ↓', desc: 'Scroll down (large)' },
-  { gesture: 'Thumbs up 👍', desc: 'Confirm pending action' },
-  { gesture: 'Thumbs down 👎', desc: 'Cancel pending action' },
+  { gesture: 'Swipe <-', desc: 'Navigate back' },
+  { gesture: 'Swipe ->', desc: 'Navigate forward' },
+  { gesture: 'Swipe up', desc: 'Scroll up (large)' },
+  { gesture: 'Swipe down', desc: 'Scroll down (large)' },
+  { gesture: 'Thumbs up', desc: 'Confirm pending action' },
+  { gesture: 'Thumbs down', desc: 'Cancel pending action' },
   { gesture: 'Three fingers (1s)', desc: 'Open task picker' },
 ];
 
@@ -59,7 +59,7 @@ export function toggleShortcutsHelp(): void {
   card.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
       <h2 style="margin:0;font-size:16px;font-weight:700;letter-spacing:0.3px">ARIA Shortcuts &amp; Gestures</h2>
-      <button id="aria-sh-close" style="background:none;border:none;color:#9aa0aa;cursor:pointer;font-size:18px;line-height:1;padding:2px 4px">✕</button>
+      <button id="aria-sh-close" style="background:none;border:none;color:#9aa0aa;cursor:pointer;font-size:18px;line-height:1;padding:2px 4px">x</button>
     </div>
 
     <h3 style="margin:0 0 10px;font-size:11px;text-transform:uppercase;letter-spacing:0.8px;color:#9aa0aa">Keyboard shortcuts</h3>

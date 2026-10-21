@@ -112,7 +112,7 @@ function describeElementAt(x: number, y: number): string {
   const label = el.getAttribute('aria-label') ?? el.getAttribute('title') ?? '';
   const text = el.textContent?.trim().slice(0, 80) ?? '';
   const href = el instanceof HTMLAnchorElement ? el.href : '';
-  const parts = [tag, role && `role=${role}`, label && `label="${label}"`, text && `"${text}"`, href && `→${href}`].filter(Boolean);
+  const parts = [tag, role && `role=${role}`, label && `label="${label}"`, text && `"${text}"`, href && `->${href}`].filter(Boolean);
   return parts.join(' ');
 }
 

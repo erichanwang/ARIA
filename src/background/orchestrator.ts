@@ -1,7 +1,7 @@
 /**
  * Voice-loop orchestrator. Owns the agent runtime state machine:
  *
- *   WAKE → listening → transcript → thinking → (confidence check) → acting → idle
+ *   WAKE -> listening -> transcript -> thinking -> (confidence check) -> acting -> idle
  *
  * Now also:
  * - Maintains session context (last 5 commands) sent with every Claude call.
@@ -9,7 +9,7 @@
  * - Maintains a 10-entry history for the history panel.
  * - Handles redo commands.
  */
-import { callClaude } from './claude';
+import { callAgent } from './inference';
 import { classify } from './command-classifier';
 import { recordExample } from './trainer';
 import { getCachedResponse, setCachedResponse } from './response-cache';
@@ -377,14 +377,12 @@ export class Orchestrator {
 
     // Check response cache before calling Claude (5-min TTL, same command+URL).
     const cached = getCachedResponse(command, ctxResponse.context.url);
-    const result = cached ?? await callClaude(
-      settings.apiKey,
+    const result = cached ?? await callAgent(
+      settings,
       effectiveCommand + gazeHint,
       ctxResponse.context,
       this.sessionContext.getContextString(),
       settings.voiceShorthands ?? [],
-      settings.agentName ?? 'ARIA',
-      settings.readingLevel ?? 'standard',
     );
     if (!cached && result.ok) setCachedResponse(command, ctxResponse.context.url, result);
 
@@ -506,7 +504,7 @@ export class Orchestrator {
       error: '#ff8c00',
     };
     chrome.action.setBadgeBackgroundColor({ color: colors[state] }).catch(() => {});
-    chrome.action.setBadgeText({ text: state === 'idle' ? '' : '●' }).catch(() => {});
+    chrome.action.setBadgeText({ text: state === 'idle' ? '' : 'ON' }).catch(() => {});
   }
 
   private setError(error: string): void {

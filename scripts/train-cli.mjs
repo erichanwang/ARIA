@@ -123,28 +123,28 @@ async function main() {
 
   // Validate required arguments
   if (!args.examples) {
-    console.error('❌ Error: --examples FILE is required');
+    console.error('[fail] Error: --examples FILE is required');
     console.log('\nRun with --help for usage info');
     process.exit(1);
   }
 
   // Check if examples file exists
   if (!fs.existsSync(args.examples)) {
-    console.error(`❌ Error: Examples file not found: ${args.examples}`);
+    console.error(`[fail] Error: Examples file not found: ${args.examples}`);
     process.exit(1);
   }
 
   const outputPath = args.output || path.join(process.cwd(), 'weights.json');
   const examplesPath = path.resolve(args.examples);
 
-  console.log('🚀 ARIA Batch Training CLI');
+  console.log('ARIA Batch Training CLI');
   console.log('==========================\n');
-  console.log(`📂 Examples: ${examplesPath}`);
-  console.log(`💾 Output:   ${outputPath}`);
+  console.log(`Examples: ${examplesPath}`);
+  console.log(`Output:   ${outputPath}`);
 
   try {
     // Load examples
-    console.log('\n📖 Loading examples...');
+    console.log('\nLoading examples...');
     const raw = fs.readFileSync(examplesPath, 'utf-8');
     const examples = JSON.parse(raw);
 
@@ -156,10 +156,10 @@ async function main() {
       throw new Error('Examples array is empty');
     }
 
-    console.log(`   ✅ Loaded ${examples.length} examples\n`);
+    console.log(`   [ok] Loaded ${examples.length} examples\n`);
 
     // Analyze data
-    console.log('📊 Data Analysis:');
+    console.log('Data Analysis:');
     const classCount = {};
     for (const ex of examples) {
       classCount[ex.actionType] = (classCount[ex.actionType] || 0) + 1;
@@ -177,7 +177,7 @@ async function main() {
     console.log(`\n  Imbalance ratio: ${ratio}:1 (max:min)`);
 
     // Show configuration
-    console.log('\n⚙️  Training Configuration:');
+    console.log('\nTraining Configuration:');
     console.log(`  Epochs: ${args.epochs || 'auto-tune'}`);
     console.log(`  Batch size: ${args.batchSize || 'auto-tune'}`);
     console.log(`  Validation split: ${(args.validationSplit * 100).toFixed(0)}%`);
@@ -189,16 +189,16 @@ async function main() {
     // 2. Call it with the examples and config
     // 3. Serialize the results
 
-    console.log('\n📈 Training Status:');
-    console.log('  ℹ️  Full training not implemented in CLI wrapper');
-    console.log('  ℹ️  For now, this is a data validation and analysis tool');
-    console.log('  ℹ️  To train, use the Electron app: npm run electron\n');
+    console.log('\nTraining Status:');
+    console.log('  [info] Full training not implemented in CLI wrapper');
+    console.log('  [info] For now, this is a data validation and analysis tool');
+    console.log('  [info] To train, use the Electron app: npm run electron\n');
 
-    console.log('✅ Data validation passed!');
+    console.log('[ok] Data validation passed!');
     console.log('   Next: Use the Electron app to train with this data');
     console.log(`   Or implement the train-cli.mjs wrapper to call trainClassifier()\n`);
   } catch (error) {
-    console.error(`\n❌ Error: ${error.message}\n`);
+    console.error(`\n[fail] Error: ${error.message}\n`);
     process.exit(1);
   }
 }

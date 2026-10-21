@@ -381,7 +381,7 @@ async function mount(): Promise<void> {
     }
   });
 
-  // Mount element inspector (Ctrl+hover → ARIA attribute tooltip).
+  // Mount element inspector (Ctrl+hover -> ARIA attribute tooltip).
   mountElementInspector();
 
   // Auto-mount reading progress bar on article/blog pages.

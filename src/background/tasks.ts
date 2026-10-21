@@ -2,7 +2,8 @@
  * Task-module Claude runner (MILESTONE 10). Each task uses a focused system
  * prompt and validates the model's JSON against its Zod schema.
  */
-import { requestClaude } from './claude';
+import { requestAgentRaw } from './inference';
+import type { AriaSettings } from '@shared/types';
 import { extractFirstJsonObject } from '@shared/actions';
 import {
   FormFillResult,
@@ -19,36 +20,36 @@ export interface TaskRunResult {
   error: string | null;
 }
 
-export async function runTask(apiKey: string, req: TaskRequest): Promise<TaskRunResult> {
+export async function runTask(settings: AriaSettings, req: TaskRequest): Promise<TaskRunResult> {
   switch (req.kind) {
     case 'mcq':
-      return run(apiKey, MCQ_PROMPT, JSON.stringify({ question: req.question, options: req.options }), McqResult);
+      return run(settings, MCQ_PROMPT, JSON.stringify({ question: req.question, options: req.options }), McqResult);
     case 'trivia':
       return run(
-        apiKey,
+        settings,
         TRIVIA_PROMPT,
         JSON.stringify({ topic: req.topic, difficulty: req.difficulty, avoid: req.asked }),
         TriviaResult,
       );
     case 'formfill':
       return run(
-        apiKey,
+        settings,
         FORMFILL_PROMPT,
         JSON.stringify({ fields: req.fields, values: req.values }),
         FormFillResult,
       );
     case 'summarize':
-      return run(apiKey, SUMMARIZE_PROMPT, JSON.stringify({ text: req.text, url: req.url }), SummarizeResult);
+      return run(settings, SUMMARIZE_PROMPT, JSON.stringify({ text: req.text, url: req.url }), SummarizeResult);
   }
 }
 
 async function run<T>(
-  apiKey: string,
+  settings: AriaSettings,
   system: string,
   user: string,
   schema: z.ZodType<T>,
 ): Promise<TaskRunResult> {
-  const raw = await requestClaude(apiKey, system, user);
+  const raw = await requestAgentRaw(settings, system, user);
   if (!raw.ok || !raw.text) return { ok: false, result: null, error: raw.error };
 
   const json = extractFirstJsonObject(raw.text);

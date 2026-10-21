@@ -1,9 +1,9 @@
 /**
  * Shopping List Builder
- * "add this to my list" → extracts product name + price + URL from current hover position.
- * "read my list" → reads it aloud.
- * "clear my list" → wipes it.
- * "export my list" → downloads as CSV.
+ * "add this to my list" -> extracts product name + price + URL from current hover position.
+ * "read my list" -> reads it aloud.
+ * "clear my list" -> wipes it.
+ * "export my list" -> downloads as CSV.
  */
 
 const STORAGE_KEY = 'aria.shoppingList';

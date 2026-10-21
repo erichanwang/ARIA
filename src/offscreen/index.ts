@@ -1,12 +1,12 @@
 /**
  * Offscreen document entry. The only context allowed to touch the microphone
  * (and later the camera) under MV3. Runs Porcupine wake-word detection and
- * Web Speech STT, relaying events to the background service worker.
+ * on-device Whisper STT, relaying events to the background service worker.
  *
  * Lifecycle is driven entirely by messages from the background SW:
- *   START_LISTENING → boot mic + wake word
- *   STOP_LISTENING  → tear everything down
- *   START_STT       → capture one command (after a wake)
+ *   START_LISTENING -> boot mic + wake word
+ *   STOP_LISTENING  -> tear everything down
+ *   START_STT       -> capture one command (after a wake)
  */
 import { WakeWord } from './wake-word';
 import { SoftWakeWord } from './soft-wake-word';
@@ -48,6 +48,7 @@ chrome.runtime.onMessage.addListener((msg: unknown) => {
 });
 
 async function startListening(accessKey: string, wakePhrase?: string): Promise<void> {
+  Stt.preload(); // load the bundled Whisper model while we wait for a wake word
   if (wakeWord?.isRunning()) return;
   // Use Porcupine if an access key is provided; fall back to soft SpeechRecognition matching.
   if (accessKey) {
@@ -85,7 +86,7 @@ function onWake(): void {
 }
 
 function startStt(windowMs: number): void {
-  // Pause wake word listener so it doesn't contend with Web Speech for the mic.
+  // Pause wake word listener so it doesn't contend with STT for the mic.
   if (wakeWord instanceof WakeWord) void wakeWord.pause();
   else wakeWord?.pause();
 

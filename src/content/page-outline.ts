@@ -40,7 +40,7 @@ export function togglePageOutline(): void {
   title.textContent = `Outline (${headings.length})`;
 
   const closeBtn = document.createElement('button');
-  closeBtn.textContent = '✕';
+  closeBtn.textContent = 'x';
   closeBtn.style.cssText = 'background:none;border:none;color:#6a737d;cursor:pointer;font-size:14px;line-height:1';
   closeBtn.addEventListener('click', togglePageOutline);
 

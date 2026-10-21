@@ -125,7 +125,7 @@ export class Hud {
     timerEl.textContent = '5';
 
     bar.innerHTML = `
-      <span class="aria-hud-conf-icon">⚠</span>
+      <span class="aria-hud-conf-icon">[warn]</span>
       <span class="aria-hud-conf-text">Not sure (${pct}%) — trying <em>${actionSummary}</em></span>`;
     bar.appendChild(timerEl);
 

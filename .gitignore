@@ -8,6 +8,8 @@ graphify-out/
 .voice-training/
 public/mediapipe-wasm/
 public/porcupine-model/*.pv
+public/models/whisper-base.en/
+public/ort/
 
 # Markdown: keep important docs, ignore planning docs
 *.md
@@ -15,3 +17,4 @@ public/porcupine-model/*.pv
 !/TRAINING.md
 !/IMPROVEMENTS.md
 !/log.md
+!/PROGRESS.md

@@ -5,10 +5,10 @@
  *
  * Routing convention - `target` names the intended recipient so a single
  * onMessage listener per context can cheaply ignore traffic meant for others:
- *   - 'background'  → service worker
- *   - 'content'     → content script in a specific tab
- *   - 'offscreen'   → offscreen document (mic / wake word / camera)
- *   - 'popup'       → extension popup (only alive while open)
+ *   - 'background'  -> service worker
+ *   - 'content'     -> content script in a specific tab
+ *   - 'offscreen'   -> offscreen document (mic / wake word / camera)
+ *   - 'popup'       -> extension popup (only alive while open)
  */
 import type { AgentAction } from './actions';
 import type { AgentStatus, AriaSettings, CursorState, HistoryEntry, PageContext } from './types';
@@ -16,7 +16,7 @@ import type { TaskRequest } from './tasks';
 
 export type MessageTarget = 'background' | 'content' | 'offscreen' | 'popup';
 
-/* ----------------------------- offscreen → background ---------------------- */
+/* ----------------------------- offscreen -> background ---------------------- */
 
 /** Porcupine detected the wake word. */
 export interface WakeWordDetectedMsg {
@@ -43,7 +43,7 @@ export interface OffscreenStatusMsg {
   error: string | null;
 }
 
-/* ----------------------------- background → offscreen ---------------------- */
+/* ----------------------------- background -> offscreen ---------------------- */
 
 /** Boot the mic + Porcupine wake-word listener. */
 export interface StartListeningMsg {
@@ -66,7 +66,7 @@ export interface StartSttMsg {
   windowMs: number;
 }
 
-/* ----------------------------- background → content ------------------------ */
+/* ----------------------------- background -> content ------------------------ */
 
 /** Push a new cursor state to the on-page cursor. */
 export interface SetCursorStateMsg {
@@ -99,7 +99,7 @@ export interface SpeakMsg {
   text: string;
 }
 
-/* ----------------------------- content → background ------------------------ */
+/* ----------------------------- content -> background ------------------------ */
 
 /** Content script reporting it has mounted in a tab. */
 export interface ContentReadyMsg {
@@ -116,7 +116,7 @@ export interface ActionResultMsg {
   detail: string | null;
 }
 
-/* ----------------------------- background ↔ content (request/response) ------ */
+/* ----------------------------- background <-> content (request/response) ------ */
 
 /** Background asks the active tab for its page context (awaited response). */
 export interface GetPageContextMsg {
@@ -127,7 +127,7 @@ export interface PageContextResponse {
   context: PageContext;
 }
 
-/* ----------------------------- popup ↔ background --------------------------- */
+/* ----------------------------- popup <-> background --------------------------- */
 
 /** Popup requests the current agent status (awaited response). */
 export interface GetStatusMsg {
@@ -179,7 +179,7 @@ export interface GroupTabsMsg {
   hostname?: string;
 }
 
-/** Background → popup live status push (only delivered while popup is open). */
+/** Background -> popup live status push (only delivered while popup is open). */
 export interface StatusPushMsg {
   type: 'STATUS_PUSH';
   target: 'popup';
@@ -188,7 +188,7 @@ export interface StatusPushMsg {
 
 /* ----------------------- task modules (M10) -------------------------------- */
 
-/** content/popup → background: run a higher-level task via Claude (awaited). */
+/** content/popup -> background: run a higher-level task via Claude (awaited). */
 export interface RunTaskMsg {
   type: 'RUN_TASK';
   target: 'background';
@@ -200,7 +200,7 @@ export interface RunTaskResponse {
   error: string | null;
 }
 
-/** popup → active tab content: launch a task-module UI/flow. */
+/** popup -> active tab content: launch a task-module UI/flow. */
 export interface StartTaskUiMsg {
   type: 'START_TASK_UI';
   target: 'content';
@@ -211,14 +211,14 @@ export interface StartTaskUiMsg {
 
 export type VisionTracker = 'face' | 'hand';
 
-/** background → offscreen: start camera + a MediaPipe tracker. */
+/** background -> offscreen: start camera + a MediaPipe tracker. */
 export interface StartVisionMsg {
   type: 'START_VISION';
   target: 'offscreen';
   tracker: VisionTracker;
 }
 
-/** background → offscreen: stop camera + tracker. */
+/** background -> offscreen: stop camera + tracker. */
 export interface StopVisionMsg {
   type: 'STOP_VISION';
   target: 'offscreen';
@@ -263,21 +263,21 @@ export type HandGesture =
 
 /* ----------------------- history panel ------------------------------------ */
 
-/** background → content: push updated command history for the panel. */
+/** background -> content: push updated command history for the panel. */
 export interface HistoryUpdateMsg {
   type: 'HISTORY_UPDATE';
   target: 'content';
   entries: HistoryEntry[];
 }
 
-/** content → background: re-run a previous command by id. */
+/** content -> background: re-run a previous command by id. */
 export interface RedoCommandMsg {
   type: 'REDO_COMMAND';
   target: 'background';
   entryId: number;
 }
 
-/** content → background: capture the visible tab as a screenshot. */
+/** content -> background: capture the visible tab as a screenshot. */
 export interface CaptureScreenshotMsg {
   type: 'CAPTURE_SCREENSHOT';
   target: 'background';
@@ -287,7 +287,7 @@ export interface CaptureScreenshotResponse {
   dataUrl: string | null;
 }
 
-/** content → background: send screenshot dataUrl to Claude for description. */
+/** content -> background: send screenshot dataUrl to Claude for description. */
 export interface DescribeScreenshotMsg {
   type: 'DESCRIBE_SCREENSHOT';
   target: 'background';
@@ -296,23 +296,24 @@ export interface DescribeScreenshotMsg {
 export interface DescribeScreenshotResponse {
   ok: boolean;
   description: string | null;
+  error: string | null;
 }
 
-/** content → background: open a new browser tab. */
+/** content -> background: open a new browser tab. */
 export interface OpenTabMsg {
   type: 'OPEN_TAB';
   target: 'background';
   url: string;
 }
 
-/** background → content: show a proactive follow-up suggestion in the HUD. */
+/** background -> content: show a proactive follow-up suggestion in the HUD. */
 export interface SuggestionMsg {
   type: 'SUGGESTION';
   target: 'content';
   text: string;
 }
 
-/** background → content: show a low-confidence confirmation prompt. */
+/** background -> content: show a low-confidence confirmation prompt. */
 export interface ConfidencePromptMsg {
   type: 'CONFIDENCE_PROMPT';
   target: 'content';
@@ -320,13 +321,13 @@ export interface ConfidencePromptMsg {
   actionSummary: string;
 }
 
-/** content → background: user confirmed a low-confidence action. */
+/** content -> background: user confirmed a low-confidence action. */
 export interface ConfirmActionMsg {
   type: 'CONFIRM_ACTION';
   target: 'background';
 }
 
-/** content → background: user cancelled a low-confidence action. */
+/** content -> background: user cancelled a low-confidence action. */
 export interface CancelActionMsg {
   type: 'CANCEL_ACTION';
   target: 'background';
@@ -334,7 +335,7 @@ export interface CancelActionMsg {
 
 /* --------------------------------- union ----------------------------------- */
 
-/** background → content: show a toast notification. */
+/** background -> content: show a toast notification. */
 export interface ToastMsg {
   type: 'TOAST';
   target: 'content';
@@ -342,7 +343,7 @@ export interface ToastMsg {
   duration?: number; // ms, default 4000
 }
 
-/** content → background: STT transcript language detected. */
+/** content -> background: STT transcript language detected. */
 export interface LangDetectedMsg {
   type: 'LANG_DETECTED';
   target: 'background';
@@ -351,7 +352,7 @@ export interface LangDetectedMsg {
 
 /* ─────────────────── offline / neural-net training ─────────────────── */
 
-/** popup → background: kick off an offline training cycle. */
+/** popup -> background: kick off an offline training cycle. */
 export interface TrainModelMsg {
   type: 'TRAIN_MODEL';
   target: 'background';
@@ -362,7 +363,7 @@ export interface TrainModelResponse {
   error: string | null;
 }
 
-/** popup → background: request current training status. */
+/** popup -> background: request current training status. */
 export interface GetTrainingStatusMsg {
   type: 'GET_TRAINING_STATUS';
   target: 'background';
@@ -374,7 +375,7 @@ export interface TrainingStatusResponse {
   lastAccuracy: number | null;
 }
 
-/** popup → background: clear all stored training examples. */
+/** popup -> background: clear all stored training examples. */
 export interface ClearTrainingDataMsg {
   type: 'CLEAR_TRAINING_DATA';
   target: 'background';

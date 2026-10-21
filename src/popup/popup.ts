@@ -46,6 +46,10 @@ const confThreshVal = $('conf-thresh-val');
 const confirmActingInput = $('confirm-acting') as HTMLInputElement;
 const safeModeInput = $('safe-mode') as HTMLInputElement;
 const readingLevelSelect = $('reading-level') as HTMLSelectElement;
+const inferenceProviderSelect = $('inference-provider') as HTMLSelectElement;
+const ollamaFields = $('ollama-fields');
+const ollamaModelInput = $('ollama-model') as HTMLInputElement;
+const ollamaUrlInput = $('ollama-url') as HTMLInputElement;
 
 // Voice tab
 const wakeWordInput = $('wake-word') as HTMLInputElement;
@@ -109,6 +113,10 @@ async function init(): Promise<void> {
   confirmActingInput.checked = settings.confirmBeforeActing;
   safeModeInput.checked = settings.safeMode ?? false;
   readingLevelSelect.value = settings.readingLevel ?? 'standard';
+  inferenceProviderSelect.value = settings.inferenceProvider ?? 'anthropic';
+  ollamaModelInput.value = settings.ollamaModel ?? 'llama3.2';
+  ollamaUrlInput.value = settings.ollamaUrl ?? 'http://localhost:11434';
+  ollamaFields.style.display = inferenceProviderSelect.value === 'ollama' ? '' : 'none';
 
   // Voice
   wakeWordInput.value = settings.wakeWord || 'Hey ARIA';
@@ -183,8 +191,27 @@ function wireEvents(initialShorthands: VoiceShorthand[]): void {
   });
 
   $('test-api-key').addEventListener('click', async () => {
-    const key = apiKeyInput.value.trim();
     const hint = $('api-key-hint');
+
+    // Local provider selected: the API key field is unused, and this button
+    // must never phone Anthropic just because it happens to be non-empty.
+    // Test reachability of the configured Ollama server instead.
+    if (inferenceProviderSelect.value === 'ollama') {
+      const baseUrl = ollamaUrlInput.value.trim() || 'http://localhost:11434';
+      hint.textContent = 'Testing…';
+      hint.style.color = '#9aa0aa';
+      try {
+        const res = await fetch(`${baseUrl}/api/tags`);
+        hint.textContent = res.ok ? 'Ollama server reachable.' : `Error: ${res.statusText}`;
+        hint.style.color = res.ok ? '#4ade80' : '#ff8c00';
+      } catch (e) {
+        hint.textContent = `Network error: ${(e as Error).message}`;
+        hint.style.color = '#ff8c00';
+      }
+      return;
+    }
+
+    const key = apiKeyInput.value.trim();
     if (!key) { hint.textContent = 'Enter an API key first.'; hint.style.color = '#ff8c00'; return; }
     hint.textContent = 'Testing…';
     hint.style.color = '#9aa0aa';
@@ -239,6 +266,17 @@ function wireEvents(initialShorthands: VoiceShorthand[]): void {
   );
   readingLevelSelect.addEventListener('change', () =>
     void patchSettings({ readingLevel: readingLevelSelect.value as 'simple' | 'standard' | 'advanced' }),
+  );
+  inferenceProviderSelect.addEventListener('change', () => {
+    const provider = inferenceProviderSelect.value as 'anthropic' | 'ollama';
+    ollamaFields.style.display = provider === 'ollama' ? '' : 'none';
+    void patchSettings({ inferenceProvider: provider });
+  });
+  ollamaModelInput.addEventListener('change', () =>
+    void patchSettings({ ollamaModel: ollamaModelInput.value.trim() || 'llama3.2' }),
+  );
+  ollamaUrlInput.addEventListener('change', () =>
+    void patchSettings({ ollamaUrl: ollamaUrlInput.value.trim() || 'http://localhost:11434' }),
   );
 
   // Voice
@@ -393,7 +431,7 @@ function renderHistory(entries: HistoryEntry[]): void {
 
     const badge = document.createElement('span');
     badge.className = `hist-badge ${e.success ? 'ok' : 'fail'}`;
-    badge.textContent = e.success ? '✓' : '✗';
+    badge.textContent = e.success ? 'OK' : 'FAIL';
 
     const text = document.createElement('div');
     text.className = 'hist-text';
@@ -455,7 +493,7 @@ function renderShorthands(shorthands: VoiceShorthand[]): void {
     expandInput.style.cssText = 'flex:2;padding:6px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.08);background:#1d1d25;color:#f3f3f7;font-size:12px;min-width:0';
 
     const delBtn = document.createElement('button');
-    delBtn.textContent = '✕';
+    delBtn.textContent = 'x';
     delBtn.style.cssText = 'background:none;border:none;color:#9aa0aa;cursor:pointer;font-size:13px;padding:0 4px';
     delBtn.addEventListener('click', () => {
       void loadSettings().then((st) => {
@@ -567,7 +605,7 @@ function renderMacros(macros: MacroEntry[]): void {
     meta.textContent = `${m.commands.length} step${m.commands.length !== 1 ? 's' : ''} · ${relTime(m.createdAt)}`;
 
     const del = document.createElement('button');
-    del.textContent = '✕';
+    del.textContent = 'x';
     del.style.cssText = 'background:none;border:none;color:#9aa0aa;cursor:pointer;font-size:12px;padding:0 4px;margin-left:auto';
     del.addEventListener('click', async () => {
       const fresh = await chrome.storage.local.get(MACRO_KEY);

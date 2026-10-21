@@ -41,7 +41,7 @@ export class SessionContext {
     const recent = this.entries.slice(-this.maxContext);
     if (recent.length === 0) return '';
     const lines = recent.map(
-      (e) => `- "${e.command}" → ${e.action} (${e.success ? 'ok' : 'failed'})`,
+      (e) => `- "${e.command}" -> ${e.action} (${e.success ? 'ok' : 'failed'})`,
     );
     return `\nRecent actions:\n${lines.join('\n')}`;
   }

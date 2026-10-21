@@ -62,10 +62,24 @@
           <label for="api-key">Anthropic API key</label>
           <div class="key-row">
             <input type="password" id="api-key" placeholder="sk-ant-…" autocomplete="off" spellcheck="false" />
-            <button id="toggle-key" class="ghost" title="Show / hide">👁</button>
+            <button id="toggle-key" class="ghost" title="Show / hide">Key</button>
             <button id="test-api-key" class="ghost" title="Test connection">Test</button>
           </div>
           <p class="hint" id="api-key-hint">Stored only in local extension storage. Never leaves this device.</p>
+        </div>
+        <div class="field">
+          <label for="inference-provider">Command understanding</label>
+          <select id="inference-provider">
+            <option value="anthropic">Hosted (Claude API) — needs API key above</option>
+            <option value="ollama">Local (Ollama) — fully on-device, no network call</option>
+          </select>
+          <p class="hint">Local mode sends nothing off this machine, but small local models are less accurate.</p>
+        </div>
+        <div class="field" id="ollama-fields" style="display:none">
+          <label for="ollama-model">Ollama model</label>
+          <input type="text" id="ollama-model" placeholder="llama3.2" autocomplete="off" spellcheck="false" />
+          <label for="ollama-url" style="margin-top:8px">Ollama server URL</label>
+          <input type="text" id="ollama-url" placeholder="http://localhost:11434" autocomplete="off" spellcheck="false" />
         </div>
         <div class="field">
           <label for="pv-key">Picovoice access key <span class="opt">(wake word)</span></label>
@@ -217,7 +231,7 @@
         <div class="hist-toolbar">
           <span class="label">Saved macros</span>
         </div>
-        <p class="hint" style="margin:8px 0 10px">Voice: <em>"start recording"</em> → <em>"stop recording [name]"</em> → <em>"run [name]"</em></p>
+        <p class="hint" style="margin:8px 0 10px">Voice: <em>"start recording"</em> -> <em>"stop recording [name]"</em> -> <em>"run [name]"</em></p>
         <ol class="hist-list" id="macro-list">
           <li class="hist-empty">No macros saved yet.</li>
         </ol>

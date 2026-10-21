@@ -807,7 +807,7 @@ export class ActionExecutor {
     const headerLabel = document.createElement('span');
     headerLabel.textContent = 'Summary';
     const closeBtn = document.createElement('button');
-    closeBtn.textContent = '✕';
+    closeBtn.textContent = 'x';
     closeBtn.style.cssText = 'background:none;border:none;color:#9aa0aa;cursor:pointer;font-size:14px';
     closeBtn.addEventListener('click', () => card.remove());
     header.append(headerLabel, closeBtn);
@@ -842,7 +842,7 @@ export class ActionExecutor {
 
     const close = document.createElement('button');
     close.style.cssText = 'float:right;background:none;border:none;color:#9aa0aa;cursor:pointer;font-size:13px;margin:-2px -4px 4px 8px';
-    close.textContent = '✕';
+    close.textContent = 'x';
     close.addEventListener('click', () => tip.remove());
     tip.prepend(close);
 
@@ -1262,7 +1262,7 @@ function showMoodCard(mood: string, suggestion: string): void {
 
   const close = document.createElement('button');
   close.style.cssText = 'float:right;background:none;border:none;color:#9aa0aa;cursor:pointer;font-size:13px';
-  close.textContent = '✕';
+  close.textContent = 'x';
   close.addEventListener('click', () => card.remove());
 
   card.append(close, label, moodEl, sugEl);

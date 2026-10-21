@@ -7,13 +7,13 @@
  *               shows the ARIA eye/hand cursor across the whole screen
  *
  * IPC surface:
- *   cursor-move     renderer → main → cursorWin : move gaze/hand cursor
- *   cursor-click    renderer → main             : dwell / gesture click
- *   rl-feedback     renderer → main             : modifier shortcuts for reward / punish
- *   open-url        renderer → shell
- *   write-clipboard renderer → clipboard
- *   hide-window     renderer → statusWin.hide()
- *   get/save-settings renderer ↔ disk
+ *   cursor-move     renderer -> main -> cursorWin : move gaze/hand cursor
+ *   cursor-click    renderer -> main             : dwell / gesture click
+ *   rl-feedback     renderer -> main             : modifier shortcuts for reward / punish
+ *   open-url        renderer -> shell
+ *   write-clipboard renderer -> clipboard
+ *   hide-window     renderer -> statusWin.hide()
+ *   get/save-settings renderer <-> disk
  */
 import {
   app,
@@ -312,7 +312,7 @@ ipcMain.on('runtime-log', (_e, event: string, details?: Record<string, unknown>)
   appendRuntimeLog(event, details);
 });
 
-// Relay cursor position from vision renderer → cursorWin
+// Relay cursor position from vision renderer -> cursorWin
 ipcMain.on('cursor-move', (_e, pos: { x: number; y: number; visible: boolean; state?: string }) => {
   if (pos.visible && !cursorWin) createCursorWindow();
   cursorWin?.webContents.send('cursor-update', pos);

@@ -49,6 +49,12 @@ export interface AriaSettings {
   safeMode: boolean;
   /** 'byok' = user provides their own key. 'hosted' = reserved for future managed key option. */
   keyMode: 'byok' | 'hosted';
+  /** Which backend resolves commands into actions. 'anthropic' = hosted Claude API (default, current behavior). 'ollama' = local model via Ollama, no network call. */
+  inferenceProvider: 'anthropic' | 'ollama';
+  /** Ollama server base URL, only used when inferenceProvider is 'ollama'. */
+  ollamaUrl: string;
+  /** Ollama model tag to use for command resolution, e.g. "llama3.2" or "qwen2.5". */
+  ollamaModel: string;
 
   // ── Feature Explosion settings ──────────────────────────────────────────────
 
@@ -99,6 +105,9 @@ export const DEFAULT_SETTINGS: AriaSettings = {
   accentColor: '#ff2b2b',
   safeMode: false,
   keyMode: 'byok',
+  inferenceProvider: 'anthropic',
+  ollamaUrl: 'http://localhost:11434',
+  ollamaModel: 'llama3.2',
   dangerZoneDetection: true,
   autoPageReader: false,
   whisperMode: false,
@@ -112,7 +121,7 @@ export const DEFAULT_SETTINGS: AriaSettings = {
   dailyBriefingUrls: [],
 };
 
-/** User-defined voice shorthand: "home" → "navigate to https://mysite.com" */
+/** User-defined voice shorthand: "home" -> "navigate to https://mysite.com" */
 export interface VoiceShorthand {
   trigger: string;
   expansion: string;

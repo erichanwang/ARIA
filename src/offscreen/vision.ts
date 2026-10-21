@@ -4,9 +4,9 @@
  * are processed entirely on-device; only derived features leave this module.
  *
  * One camera stream feeds one active tracker at a time:
- *   - 'face' → FaceLandmarker (478 landmarks incl. iris 468–477) → gaze feature,
+ *   - 'face' -> FaceLandmarker (478 landmarks incl. iris 468–477) -> gaze feature,
  *              brow-raise + blink (via blendshapes)
- *   - 'hand' → HandLandmarker (21 landmarks) → index fingertip + gesture
+ *   - 'hand' -> HandLandmarker (21 landmarks) -> index fingertip + gesture
  *
  * WASM + model assets are loaded locally (see public/models/README.md). The
  * MediaPipe wasm fileset must live at /public/mediapipe-wasm/.

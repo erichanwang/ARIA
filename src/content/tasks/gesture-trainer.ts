@@ -16,13 +16,13 @@ interface GestureGuide {
 }
 
 const GESTURES: GestureGuide[] = [
-  { gesture: 'point', name: 'Point', instruction: 'Extend your index finger and curl the others.', emoji: '👆' },
-  { gesture: 'pinch', name: 'Pinch', instruction: 'Touch your index finger tip to your thumb.', emoji: '🤌' },
-  { gesture: 'open_palm', name: 'Open Palm', instruction: 'Open your hand flat, all fingers extended.', emoji: '✋' },
-  { gesture: 'fist', name: 'Fist', instruction: 'Close all fingers into a fist.', emoji: '✊' },
-  { gesture: 'two_finger', name: 'Two Fingers', instruction: 'Extend your index and middle finger, curl the others.', emoji: '✌' },
-  { gesture: 'peace', name: 'Peace Sign', instruction: 'Same as two fingers — a V shape.', emoji: '✌' },
-  { gesture: 'thumbs_up', name: 'Thumbs Up', instruction: 'Extend your thumb, curl other fingers.', emoji: '👍' },
+  { gesture: 'point', name: 'Point', instruction: 'Extend your index finger and curl the others.', emoji: 'POINT' },
+  { gesture: 'pinch', name: 'Pinch', instruction: 'Touch your index finger tip to your thumb.', emoji: 'PINCH' },
+  { gesture: 'open_palm', name: 'Open Palm', instruction: 'Open your hand flat, all fingers extended.', emoji: 'OPEN' },
+  { gesture: 'fist', name: 'Fist', instruction: 'Close all fingers into a fist.', emoji: 'CLOSED' },
+  { gesture: 'two_finger', name: 'Two Fingers', instruction: 'Extend your index and middle finger, curl the others.', emoji: 'V' },
+  { gesture: 'peace', name: 'Peace Sign', instruction: 'Same as two fingers — a V shape.', emoji: 'V' },
+  { gesture: 'thumbs_up', name: 'Thumbs Up', instruction: 'Extend your thumb, curl other fingers.', emoji: 'UP' },
 ];
 
 let onGestureDetected: ((g: HandGesture) => void) | null = null;
@@ -49,7 +49,7 @@ export async function runGestureTrainer(speech: Speech, hud: Hud): Promise<void>
     if (success) {
       passed++;
       await speech.speak(`${guide.name}! Well done.`);
-      hud.setCommand(`✓ ${guide.name} — correct!`);
+      hud.setCommand(`OK ${guide.name} — correct!`);
     } else {
       await speech.speak(`Let's move on — you can practice ${guide.name} later.`);
     }

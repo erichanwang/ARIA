@@ -27,7 +27,7 @@ export async function runScreenshotDescribe(speech: Speech, hud: Hud): Promise<v
   });
 
   if (!descRes?.ok || !descRes.description) {
-    await speech.speak("I couldn't describe the screenshot.");
+    await speech.speak(descRes?.error ?? "I couldn't describe the screenshot.");
     return;
   }
 
@@ -56,7 +56,7 @@ function showScreenshotPanel(dataUrl: string, description: string): void {
   title.style.cssText = 'font-size:11px;text-transform:uppercase;letter-spacing:0.7px;color:#9aa0aa;font-weight:700';
   title.textContent = 'Screenshot';
   const closeBtn = document.createElement('button');
-  closeBtn.textContent = '✕';
+  closeBtn.textContent = 'x';
   closeBtn.style.cssText = 'background:none;border:none;color:#9aa0aa;cursor:pointer;font-size:14px;padding:0';
   closeBtn.addEventListener('click', () => panel.remove());
   header.append(title, closeBtn);

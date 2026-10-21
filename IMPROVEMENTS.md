@@ -113,27 +113,27 @@ This session completed **11 high-impact improvements** across three strategic pi
 ### Training Pipeline
 ```
 Input Examples
-    ↓
+    |
 [Data Quality Checks] — reject noisy, detect duplicates
-    ↓
+    |
 [Class Weighting] — balance imbalanced classes
-    ↓
+    |
 [Train/Val Split] — 80/20 for overfitting detection
-    ↓
+    |
 [Adaptive Epochs] — scale 40-200 based on size
-    ↓
+    |
 [Model Training] — TensorFlow.js with:
     - Negative example upweighting (5x)
     - Class weighting
     - Seeded shuffling (if seed provided)
     - Validation split monitoring
-    ↓
+    |
 [Metrics Computation]
     - Train accuracy + loss curve
     - Validation accuracy
     - Per-class precision/recall/F1
     - Recommended confidence threshold
-    ↓
+    |
 Output: TrainingResult with full diagnostics
 ```
 
@@ -150,21 +150,21 @@ Output: TrainingResult with full diagnostics
 ## User Experience Improvements
 
 ### Before
-- ❌ No explanation of RL feedback
-- ❌ Unknown hyperparameter scaling
-- ❌ No reproducibility
-- ❌ Training opacity (no loss monitoring)
-- ❌ Manual asset downloads
-- ❌ No data quality visibility
+- [fail] No explanation of RL feedback
+- [fail] Unknown hyperparameter scaling
+- [fail] No reproducibility
+- [fail] Training opacity (no loss monitoring)
+- [fail] Manual asset downloads
+- [fail] No data quality visibility
 
 ### After
-- ✅ TRAINING.md explains everything
-- ✅ Epochs auto-tune 40-200 based on data size
-- ✅ Seeded training for reproducibility
-- ✅ Epoch-by-epoch loss curves available
-- ✅ One-command asset setup
-- ✅ Data quality report in training status
-- ✅ Per-class metrics for informed decisions
+- [ok] TRAINING.md explains everything
+- [ok] Epochs auto-tune 40-200 based on data size
+- [ok] Seeded training for reproducibility
+- [ok] Epoch-by-epoch loss curves available
+- [ok] One-command asset setup
+- [ok] Data quality report in training status
+- [ok] Per-class metrics for informed decisions
 
 ---
 
@@ -194,19 +194,19 @@ Output: TrainingResult with full diagnostics
 ## Testing & Validation
 
 ### Manual Testing Done
-- ✅ Training with small datasets (20 examples)
-- ✅ Training with large datasets (500+ examples)
-- ✅ Class imbalance handling (1:50 ratio)
-- ✅ Seeded reproducibility (same seed → same model)
-- ✅ Validation accuracy gap detection
-- ✅ CLI data validation
+- [ok] Training with small datasets (20 examples)
+- [ok] Training with large datasets (500+ examples)
+- [ok] Class imbalance handling (1:50 ratio)
+- [ok] Seeded reproducibility (same seed -> same model)
+- [ok] Validation accuracy gap detection
+- [ok] CLI data validation
 
 ### Code Quality
-- ✅ All changes backward compatible
-- ✅ TypeScript typing throughout
-- ✅ No breaking API changes
-- ✅ Clear commit messages with rationale
-- ✅ Comments for non-obvious logic
+- [ok] All changes backward compatible
+- [ok] TypeScript typing throughout
+- [ok] No breaking API changes
+- [ok] Clear commit messages with rationale
+- [ok] Comments for non-obvious logic
 
 ### Performance Notes
 - Validation split computation: +1-2s per training (on 500 examples)
@@ -222,11 +222,11 @@ Output: TrainingResult with full diagnostics
 | Setup complexity | 4 steps | 1 step | -75% |
 | Training visibility | None | Full history | ∞ |
 | Hyperparameter tuning | Manual | Automatic | 100% |
-| Overfitting detection | Impossible | Validation split | ✅ |
-| Per-class insight | None | Precision/recall/F1 | ✅ |
-| Reproducibility | 0% | 100% (with seed) | ✅ |
-| Imbalance handling | None | Inverse frequency | ✅ |
-| Documentation | 0 pages | 1 page + guide | ✅ |
+| Overfitting detection | Impossible | Validation split | [ok] |
+| Per-class insight | None | Precision/recall/F1 | [ok] |
+| Reproducibility | 0% | 100% (with seed) | [ok] |
+| Imbalance handling | None | Inverse frequency | [ok] |
+| Documentation | 0 pages | 1 page + guide | [ok] |
 
 ---
 
@@ -255,10 +255,10 @@ Output: TrainingResult with full diagnostics
 ## Deployment Notes
 
 All changes are:
-- ✅ Backward compatible
-- ✅ Non-breaking (no API removals)
-- ✅ Fully typed (TypeScript)
-- ✅ Production-ready (error handling, validation)
+- [ok] Backward compatible
+- [ok] Non-breaking (no API removals)
+- [ok] Fully typed (TypeScript)
+- [ok] Production-ready (error handling, validation)
 
 **No migration needed** for existing models or data.
 

@@ -43,7 +43,7 @@ function showTutorialCard(title: string, body: string, onDismiss: () => void): v
 
   const icon = document.createElement('div');
   icon.style.cssText = 'font-size:32px;margin-bottom:12px';
-  icon.textContent = '✨';
+  icon.textContent = 'TIP';
 
   const h = document.createElement('h3');
   h.style.cssText = 'margin:0 0 10px;font-size:18px;font-weight:700;color:#fff';

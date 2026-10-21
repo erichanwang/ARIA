@@ -76,7 +76,7 @@ export function toggleFloatingTranscript(): void {
   });
 
   const closeBtn = document.createElement('button');
-  closeBtn.textContent = '✕';
+  closeBtn.textContent = 'x';
   closeBtn.style.cssText = btnStyle();
   closeBtn.addEventListener('click', () => panel.remove());
 

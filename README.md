@@ -104,8 +104,8 @@ speaks aloud.
 
 ## Measured performance
 
-Four harnesses under `scripts/` produce the numbers below straight from
-the code in this repo. Rerun the command to regenerate any of them.
+Six harnesses under `scripts/` produce the numbers below straight from
+the code in this repo — rerun the command to regenerate any of them.
 None of these numbers were fabricated; the caveats printed by each
 harness (elided below) are load-bearing, not boilerplate; read them
 before quoting a figure out of context.
@@ -207,6 +207,78 @@ Worst fixture results were `fixture-03.wav` at 25.0% WER (75.0% accuracy),
 `fixture-12.wav` at 11.1% WER (88.9% accuracy). These are TTS smoke-set
 results; they must not be compared with the six personal recordings as if
 they measured the same acoustic conditions.
+
+**Pipeline scheduler** - `src/background/scheduler.ts` is a from-scratch
+priority task scheduler for the command pipeline: a binary min-heap ready
+queue plus a `while` loop that drains it one task at a time, rather than
+relying on `Promise.all` or the platform's own ordering. `npm run
+eval:scheduler` runs the same rule-router/NN-classify/action-validation
+stages as the latency harness above through it, over 5 trials of a
+simulated 100-turn session where each command has trailing background
+bookkeeping (the storage writes the real orchestrator queues for
+training-example recording and history persistence) still draining when
+the next command arrives, at an arrival rate deliberately chosen to run
+the queue past its service rate (mean +/- stddev across the 5 trials):
+
+```
+Priority-aware (commands=0, background=10)
+  command wait p50: 2.922ms +/- 0.215ms
+  command wait p99: 5.986ms +/- 1.917ms
+  throughput: 353 +/- 12 tasks/sec
+
+Plain FIFO (all priority 0)
+  command wait p50: 632.227ms +/- 3.356ms
+  command wait p99: 1255.193ms +/- 8.098ms
+  throughput: 359 +/- 2 tasks/sec
+```
+
+Both runs execute the identical workload and task bodies; only the
+priority number passed to `enqueue()` differs. Scope, stated plainly: this
+is a scheduling-policy comparison under a constructed backlog, not a
+general throughput claim — a queue that never backs up doesn't care what
+order it drains in, and whether real ARIA sessions produce background
+backlogs at this rate has not been measured against a live session. What
+it does show honestly: once a backlog exists, a plain FIFO queue lets it
+delay the next spoken command's turn by hundreds of milliseconds, while
+priority ordering lets the command jump that backlog every time, at no
+measurable cost to overall throughput. Not yet wired into the live
+`Orchestrator` — see `scripts/eval-scheduler.ts` for the harness and
+`tests/scheduler.test.ts` for correctness tests (priority order, FIFO
+tie-break, serial execution, error isolation, mid-run enqueue).
+
+**Wire codec** - `src/shared/vision-frame-codec.ts` is a from-scratch
+binary wire codec for `VisionFrameData`, the per-camera-frame gaze/hand
+message sent offscreen -> background -> content at camera frame rate
+(~30-60fps) while eye or hand mode is active. It ships today as a plain
+object over `chrome.runtime.sendMessage` (structured clone, effectively
+JSON-shaped); the codec is a fixed-layout `Uint8Array` encoding of the
+same data - a tracker tag byte, a presence bitmask byte, then only the
+bytes each present field needs (normalized coordinates as fixed-point
+`uint16`, booleans as bitmask bits, the gesture enum as one byte). `npm
+run eval:wire-codec` measures encode+decode round trip latency and
+payload size against `JSON.stringify`/`JSON.parse` on the same data, over
+20000 iterations:
+
+```
+Binary codec (encodeVisionFrame + decodeVisionFrame)
+  round trip   p50: 0.0058ms   p99: 0.0290ms
+JSON (JSON.stringify + JSON.parse)
+  round trip   p50: 0.0077ms   p99: 0.0212ms
+
+Average payload size: binary 6.5 bytes vs JSON 70.0 bytes (10.8x smaller).
+```
+
+Read this plainly: the binary codec's p50 beats JSON but its p99 is
+actually slightly worse in this run — encode/decode cost for a payload
+this small is close to noise either way, and the real, consistent win is
+payload size (roughly 11x smaller), not round-trip latency. This measures
+encode/decode cost and size in isolation, not the actual
+`chrome.runtime.sendMessage` transport cost — structured clone of a plain
+object may already be cheap enough that transport, not serialization,
+dominates in practice. Not wired into the live offscreen/background
+message path; see `tests/vision-frame-codec.test.ts` for round-trip
+correctness (fixed-point tolerance, clamping out-of-range coordinates,
+every `HandGesture` value, a bare frame with no optional fields).
 
 ## Desktop app
 
@@ -325,6 +397,8 @@ npm run eval:intent     # intent-accuracy harness (see Measured performance)
 npm run eval:latency    # offline pipeline latency harness
 npm run eval:dom-finder # DOM-finder fixture benchmark
 npm run eval:stt        # speech-to-text accuracy against labeled recordings
+npm run eval:scheduler  # pipeline scheduler benchmark (see Measured performance)
+npm run eval:wire-codec # vision-frame binary codec benchmark (see Measured performance)
 ```
 
 ## License

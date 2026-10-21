@@ -25,7 +25,7 @@ export async function exportSessionTranscript(): Promise<void> {
 
   for (const e of [...entries].reverse()) {
     const date = new Date(e.timestamp).toLocaleTimeString();
-    const status = e.success ? '✓' : '✗';
+    const status = e.success ? 'OK' : 'FAIL';
     const conf = `${Math.round(e.confidence * 100)}%`;
     lines.push(`### ${date} — ${status} ${conf}`);
     lines.push(`**Command:** ${e.command}`);

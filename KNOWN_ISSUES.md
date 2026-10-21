@@ -94,7 +94,7 @@ Every bug, limitation, and TODO encountered during development that was not full
 **Notes:** Requires SSE streaming in the background SW + a new message type to push partial text to content.
 
 ### KI-17 - No Puppeteer end-to-end tests
-**Description:** The test suite has unit tests only. E2E tests covering the golden path (voice → DOM action) require a Chrome driver with extension loading support.
+**Description:** The test suite has unit tests only. E2E tests covering the golden path (voice -> DOM action) require a Chrome driver with extension loading support.
 **Notes:** Consider using `chrome-remote-interface` or `puppeteer-core` with `--load-extension`.
 
 ### KI-18 - Landing page / store listing not built

@@ -74,7 +74,7 @@ function showCritiqueCard(text: string): void {
   const title = document.createElement('span');
   title.textContent = 'Essay Critique';
   const close = document.createElement('button');
-  close.textContent = '✕';
+  close.textContent = 'x';
   close.style.cssText = 'background:none;border:none;color:#9aa0aa;cursor:pointer;font-size:14px';
   close.addEventListener('click', () => card.remove());
   header.append(title, close);

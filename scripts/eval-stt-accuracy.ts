@@ -1,9 +1,11 @@
 /**
- * Speech-to-text accuracy harness: transcribes labeled recordings
- * under `~/Documents/ARIA Voice Training/` (or `ARIA_STT_DATASET_DIR`) with the exact model the desktop
- * app uses (`onnx-community/whisper-base.en` via @huggingface/transformers,
- * same dtype config as `electron/src/renderer/app.ts` getOfflineTranscriber),
- * and compares against the ground-truth transcript in metadata.jsonl.
+ * Speech-to-text accuracy harness: transcribes the genuine labeled recordings
+ * under `~/Documents/ARIA Voice Training/` (or `ARIA_STT_DATASET_DIR`) with the
+ * exact model files the extension bundles (`public/models/whisper-base.en`,
+ * vendored by scripts/download-assets.mjs; same model + fp32 dtype the desktop
+ * app's getOfflineTranscriber and `src/offscreen/stt.ts` use), and compares
+ * against the ground-truth transcript in metadata.jsonl. Remote model
+ * loading is disabled, so a passing run proves the bundled files work.
  *
  * Audio is read straight from its existing location and never copied into
  * the repo. Decoding webm/opus -> 16kHz mono PCM is done by shelling out to
@@ -31,8 +33,9 @@ const DATASET_DIR = process.env.ARIA_STT_DATASET_DIR
   : path.join(os.homedir(), 'Documents', 'ARIA Voice Training');
 const METADATA_PATH = path.join(DATASET_DIR, 'metadata.jsonl');
 const TRANSFORMERS_ENTRY = path.resolve(
-  'electron/node_modules/@huggingface/transformers/dist/transformers.node.mjs',
+  'node_modules/@huggingface/transformers/dist/transformers.node.mjs',
 );
+const LOCAL_MODEL_DIR = path.resolve('public/models');
 
 type Sample = { file: string; text: string };
 
@@ -69,12 +72,14 @@ try {
   process.exit(1);
 }
 
-console.log(`Loading onnx-community/whisper-base.en (same model + dtype config as the desktop app)...`);
+transformers.env.allowRemoteModels = false;
+transformers.env.localModelPath = LOCAL_MODEL_DIR;
+console.log(`Loading whisper-base.en from ${LOCAL_MODEL_DIR} (the bundled files; remote loading disabled)...`);
 let transcriber;
 try {
   transcriber = await transformers.pipeline(
     'automatic-speech-recognition',
-    'onnx-community/whisper-base.en',
+    'whisper-base.en',
     {
       dtype: { encoder_model: 'fp32', decoder_model_merged: 'fp32' },
       progress_callback: (progress: Record<string, unknown>) => {
@@ -85,7 +90,7 @@ try {
     },
   );
 } catch (error) {
-  console.error('FATAL: model load failed (likely no network access to download weights).');
+  console.error('FATAL: model load failed. Run `node scripts/download-assets.mjs` to vendor the model.');
   console.error(error);
   process.exit(1);
 }
@@ -110,7 +115,7 @@ const totalDistance = results.reduce((sum, r) => sum + r.wer * r.refWords, 0);
 const totalRefWords = results.reduce((sum, r) => sum + r.refWords, 0);
 const aggregateWer = totalRefWords > 0 ? totalDistance / totalRefWords : NaN;
 
-console.log('\n=== STT accuracy harness (onnx-community/whisper-base.en) ===');
+console.log('\n=== STT accuracy harness (bundled whisper-base.en, fp32, local files only) ===');
 console.log(`Dataset: ${DATASET_DIR}`);
 console.log(
   'Normalisation: lowercase, tokens matching [a-z0-9]+ (apostrophes kept mid-word), ' +

@@ -35,7 +35,7 @@ interface Fixture {
 }
 
 const FIXTURES: Fixture[] = [
-  { name: 'icon button via aria-label', html: '<button aria-label="Search">🔍</button>', target: 'search', expectSelector: 'button' },
+  { name: 'icon button via aria-label', html: '<button aria-label="Search">*</button>', target: 'search', expectSelector: 'button' },
   { name: 'plain text button', html: '<button>Sign in</button>', target: 'sign in', expectSelector: 'button' },
   { name: 'nav link among siblings', html: '<nav><a href="/home">Home</a><a href="/docs">Documentation</a><a href="/pricing">Pricing</a></nav>', target: 'documentation', expectSelector: 'a[href="/docs"]' },
   { name: 'search input via placeholder', html: '<input type="search" placeholder="Search products…" />', target: 'search products', expectSelector: 'input' },
@@ -47,10 +47,10 @@ const FIXTURES: Fixture[] = [
   { name: 'React-style synthetic label (div, no for/id)', html: '<div class="field"><div class="field-label">Email</div><input type="text" /></div>', target: 'email', expectSelector: 'input' },
   { name: 'nested SPA field wrapper', html: '<div class="form-group"><div class="form-group__header"><span>Phone number</span></div><div class="form-group__control"><input type="tel" /></div></div>', target: 'phone number', expectSelector: 'input[type="tel"]' },
   { name: 'button id match, no visible text overlap', html: '<button id="submit-btn">Go</button>', target: 'submit-btn', expectSelector: '#submit-btn' },
-  { name: 'title attribute on icon button', html: '<button title="Close dialog">✕</button>', target: 'close dialog', expectSelector: 'button' },
+  { name: 'title attribute on icon button', html: '<button title="Close dialog">x</button>', target: 'close dialog', expectSelector: 'button' },
   { name: 'ambiguous text: tightest wrapper wins', html: '<button>Login and continue</button><button>Login</button>', target: 'login', expectSelector: 'button:nth-of-type(2)' },
   { name: 'deeply nested dashboard tile CTA', html: '<div class="dashboard"><div class="tile"><div class="tile-header"><span>Usage</span></div><div class="tile-body"><p>82% of quota used</p><div class="tile-actions"><button class="upgrade">Upgrade plan</button></div></div></div></div>', target: 'upgrade plan', expectSelector: '.upgrade' },
-  { name: 'table row action button', html: '<table><tr><td>Invoice #204</td><td><button aria-label="Download invoice 204">⬇</button></td></tr></table>', target: 'download invoice 204', expectSelector: 'button' },
+  { name: 'table row action button', html: '<table><tr><td>Invoice #204</td><td><button aria-label="Download invoice 204">v</button></td></tr></table>', target: 'download invoice 204', expectSelector: 'button' },
   { name: 'no match (target not present)', html: '<button>Something else entirely</button>', target: 'nonexistent xyzzy quantum', expectSelector: '' },
   { name: 'modal dismiss via role=button', html: '<div role="button" aria-label="Dismiss">×</div>', target: 'dismiss', expectSelector: '[role="button"]' },
   { name: 'select element via label text nearby', html: '<div class="field"><label>Country</label><select><option>USA</option></select></div>', target: 'country', expectSelector: 'select' },
@@ -95,13 +95,13 @@ const FIXTURES: Fixture[] = [
   },
   {
     name: 'compound aria-labelledby referencing two ids',
-    html: '<span id="lbl-a">Ship to</span> <span id="lbl-b">New York</span><button aria-labelledby="lbl-a lbl-b">→</button>',
+    html: '<span id="lbl-a">Ship to</span> <span id="lbl-b">New York</span><button aria-labelledby="lbl-a lbl-b">-></button>',
     target: 'ship to new york',
     expectSelector: 'button',
   },
   {
     name: 'custom ARIA switch control (role=switch, no native input)',
-    html: '<div role="button" aria-label="Enable dark mode" tabindex="0">◐</div>',
+    html: '<div role="button" aria-label="Enable dark mode" tabindex="0">Mode</div>',
     target: 'enable dark mode',
     expectSelector: '[role="button"]',
   },
@@ -119,7 +119,7 @@ const FIXTURES: Fixture[] = [
   },
   {
     name: 'label text lives in a separate aria-describedby element, not aria-label',
-    html: '<div class="tile"><div class="tile-actions"><button aria-describedby="hint-1">⇪</button></div><p id="hint-1" style="display:none">Export report as PDF</p></div>',
+    html: '<div class="tile"><div class="tile-actions"><button aria-describedby="hint-1">^</button></div><p id="hint-1" style="display:none">Export report as PDF</p></div>',
     target: 'export report as pdf',
     expectSelector: 'button', // the one button on the page is the objectively correct target
   },

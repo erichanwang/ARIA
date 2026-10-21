@@ -8,11 +8,11 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 PUBLIC_DIR="$ROOT_DIR/public"
 
-echo "📦 Downloading ARIA external assets..."
+echo "Downloading ARIA external assets..."
 echo ""
 
 # Porcupine wake word model
-echo "1️⃣  Porcupine wake word model..."
+echo "1. Porcupine wake word model..."
 mkdir -p "$PUBLIC_DIR/porcupine-model"
 cd "$PUBLIC_DIR/porcupine-model"
 
@@ -21,19 +21,19 @@ if [ ! -f "porcupine_params.pv" ]; then
   echo "   Downloading porcupine_params.pv..."
   curl -sL "https://cdn.picovoice.ai/models/porcupine/porcupine_params.pv" \
     -o porcupine_params.pv || {
-    echo "   ⚠️  Could not download Porcupine params"
-    echo "   ℹ️  Voice mode will work but wake word detection may be limited"
-    echo "   📖 See: https://picovoice.ai/docs/quick-start/porcupine/"
+    echo "   [warn] Could not download Porcupine params"
+    echo "   [info] Voice mode will work but wake word detection may be limited"
+    echo "   See: https://picovoice.ai/docs/quick-start/porcupine/"
   }
 else
-  echo "   ✅ porcupine_params.pv already exists"
+  echo "   [ok] porcupine_params.pv already exists"
 fi
 
 cd "$ROOT_DIR"
 
 # MediaPipe WASM runtime
 echo ""
-echo "2️⃣  MediaPipe WASM runtime..."
+echo "2. MediaPipe WASM runtime..."
 mkdir -p "$PUBLIC_DIR/mediapipe-wasm"
 cd "$PUBLIC_DIR/mediapipe-wasm"
 
@@ -63,12 +63,12 @@ for file in "${WASM_FILES[@]}"; do
   if [ ! -f "$file" ]; then
     echo "   Downloading $file..."
     curl -sL "$MEDIAPIPE_BASE/$file" -o "$file" || {
-      echo "   ⚠️  Could not download $file"
-      echo "   ℹ️  Eye and hand tracking will not work"
-      echo "   📖 See: https://developers.google.com/mediapipe"
+      echo "   [warn] Could not download $file"
+      echo "   [info] Eye and hand tracking will not work"
+      echo "   See: https://developers.google.com/mediapipe"
     }
   else
-    echo "   ✅ $file already exists"
+    echo "   [ok] $file already exists"
   fi
 done
 
@@ -76,18 +76,18 @@ cd "$ROOT_DIR"
 
 # Face and hand landmark task models (optional, can be loaded from Google CDN)
 echo ""
-echo "3️⃣  MediaPipe task models (face & hand landmarkers)..."
-echo "   ℹ️  These will be downloaded on-demand from Google CDN"
-echo "   ℹ️  Requires internet connection for first use"
+echo "3. MediaPipe task models (face & hand landmarkers)..."
+echo "   [info] These will be downloaded on-demand from Google CDN"
+echo "   [info] Requires internet connection for first use"
 
 echo ""
-echo "✅ Asset download complete!"
+echo "[ok] Asset download complete!"
 echo ""
-echo "📝 Summary:"
+echo "Summary:"
 echo "   • Porcupine params: Wake word detection"
 echo "   • MediaPipe WASM: Eye/hand tracking (CPU)"
 echo "   • Landmark models: Downloaded from CDN on first use"
 echo ""
-echo "🚀 You're ready to use ARIA!"
+echo "Ready to use ARIA!"
 echo "   Run: npm run dev  (for development with HMR)"
 echo "   Or:  npm run build && npx electron . (for desktop app)"

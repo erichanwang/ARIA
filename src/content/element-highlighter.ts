@@ -1,8 +1,8 @@
 /**
  * Element Highlighter Mode
  * Draws numbered overlays on every interactive element on the page.
- * "show me all clickable things" → numbers appear.
- * "click 4" → clicks the 4th element.
+ * "show me all clickable things" -> numbers appear.
+ * "click 4" -> clicks the 4th element.
  */
 import { getOverlayRoot } from './overlay';
 

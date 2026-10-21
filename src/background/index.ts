@@ -9,6 +9,7 @@
 import { Orchestrator } from './orchestrator';
 import { runTask } from './tasks';
 import { initTrainer, runTraining, getTrainingStatus, clearExamples } from './trainer';
+import { describeScreenshotOllama } from './ollama';
 import {
   AriaMessage,
   isForMe,
@@ -48,12 +49,12 @@ async function describeScreenshot(apiKey: string, dataUrl: string): Promise<Desc
         }],
       }),
     });
-    if (!res.ok) return { ok: false, description: null };
+    if (!res.ok) return { ok: false, description: null, error: null };
     const data = await res.json() as { content?: Array<{ type: string; text: string }> };
     const text = (data.content ?? []).filter((b) => b.type === 'text').map((b) => b.text).join('').trim();
-    return text ? { ok: true, description: text } : { ok: false, description: null };
+    return text ? { ok: true, description: text, error: null } : { ok: false, description: null, error: null };
   } catch {
-    return { ok: false, description: null };
+    return { ok: false, description: null, error: null };
   }
 }
 
@@ -126,7 +127,7 @@ chrome.runtime.onMessage.addListener((msg: unknown, _sender, sendResponse) => {
       return;
 
     case 'VISION_FRAME':
-      // Relay high-frequency tracking frames from offscreen → active tab.
+      // Relay high-frequency tracking frames from offscreen -> active tab.
       void orchestrator.relayVisionFrame(m.data);
       return;
 
@@ -146,7 +147,7 @@ chrome.runtime.onMessage.addListener((msg: unknown, _sender, sendResponse) => {
 
     case 'RUN_TASK': {
       void loadSettings().then(async (settings) => {
-        const out = await runTask(settings.apiKey, m.request);
+        const out = await runTask(settings, m.request);
         const response: RunTaskResponse = { ok: out.ok, result: out.result, error: out.error };
         sendResponse(response);
       });
@@ -259,7 +260,19 @@ chrome.runtime.onMessage.addListener((msg: unknown, _sender, sendResponse) => {
 
     case 'DESCRIBE_SCREENSHOT': {
       const settings2 = await loadSettings();
-      if (!settings2.apiKey) { sendResponse({ ok: false, description: null }); return; }
+      if (settings2.inferenceProvider === 'ollama') {
+        // Local provider selected: never send the screenshot to Anthropic,
+        // even if an API key happens to be saved. Fails closed if no local
+        // vision model is installed rather than silently falling back.
+        const res = await describeScreenshotOllama(
+          settings2.ollamaUrl || 'http://localhost:11434',
+          settings2.ollamaModel || 'llama3.2',
+          m.dataUrl,
+        );
+        sendResponse(res);
+        return;
+      }
+      if (!settings2.apiKey) { sendResponse({ ok: false, description: null, error: null }); return; }
       const res = await describeScreenshot(settings2.apiKey, m.dataUrl);
       sendResponse(res);
       return;

@@ -11,11 +11,11 @@ import { defineManifest } from '@crxjs/vite-plugin';
  *   runtime via chrome.offscreen.createDocument(). We only register the HTML
  *   as a web-accessible resource so the SW can load it.
  * - Permissions:
- *   - offscreen   → create the offscreen doc that owns the mic / camera
- *   - storage     → API key + settings (chrome.storage.local only)
- *   - scripting   → programmatic injection fallback
- *   - activeTab/tabs → read active tab + navigate (chrome.tabs.update)
- *   - alarms      → SW keepalive ping (MILESTONE 7)
+ *   - offscreen   -> create the offscreen doc that owns the mic / camera
+ *   - storage     -> API key + settings (chrome.storage.local only)
+ *   - scripting   -> programmatic injection fallback
+ *   - activeTab/tabs -> read active tab + navigate (chrome.tabs.update)
+ *   - alarms      -> SW keepalive ping (MILESTONE 7)
  *   - tts is intentionally omitted: we use the page's Web Speech Synthesis,
  *     not chrome.tts, so the agent can sync sentence highlighting in the DOM.
  */
@@ -57,7 +57,8 @@ export default defineManifest({
   permissions: ['offscreen', 'storage', 'scripting', 'activeTab', 'tabs', 'alarms', 'clipboardRead', 'clipboardWrite', 'bookmarks', 'tabGroups'],
   // Claude's API + Google's model CDN (KI-02: on-demand face/hand landmarker
   // model download) are the only remote hosts we contact. Mic/camera
-  // processing itself is local.
+  // processing itself is local: speech-to-text is bundled Whisper (public/models,
+  // public/ort), not the Web Speech API.
   host_permissions: ['https://api.anthropic.com/*', 'https://storage.googleapis.com/*'],
   web_accessible_resources: [
     {
@@ -67,11 +68,12 @@ export default defineManifest({
         'public/models/*',
         'public/porcupine-model/*',
         'public/mediapipe-wasm/*',
+        'public/ort/*',
       ],
       matches: ['<all_urls>'],
     },
   ],
-  // The offscreen document loads Porcupine/MediaPipe WASM (eval-free) and the
+  // The offscreen document loads Porcupine/MediaPipe/ONNX Runtime WASM (eval-free) and the
   // popup is local. No remote code. 'wasm-unsafe-eval' is required for WASM.
   content_security_policy: {
     extension_pages:

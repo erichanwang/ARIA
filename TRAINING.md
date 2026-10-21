@@ -50,7 +50,7 @@ runtime diagnostic log.
 - User says: "click here"
 - Model predicts: `scroll` (wrong!)
 - User punishes (Cmd/Ctrl+Shift+N)
-- Model stores: `("click here" → scroll, isCorrect=false)`
+- Model stores: `("click here" -> scroll, isCorrect=false)`
 - Training upweights this example, forcing model to predict anything BUT `scroll` for "click here"
 
 ## Hyperparameter Tuning (Automatic)
@@ -137,12 +137,12 @@ Coming soon: precision, recall, and F1 score per action class. This will show yo
 ### 3. Seed Data is Your Baseline
 - Model ships with ~15 seed examples per action
 - Your corrections should reinforce or fix edge cases
-- You don't need to re-teach 'scroll down' → scroll
+- You don't need to re-teach 'scroll down' -> scroll
 
 ### 4. Expect Convergence Plateaus
-- First 20 corrections: big accuracy gains (50% → 70%)
-- Next 50 corrections: steady gains (70% → 80%)
-- After 100 corrections: diminishing returns (80% → 85%)
+- First 20 corrections: big accuracy gains (50% -> 70%)
+- Next 50 corrections: steady gains (70% -> 80%)
+- After 100 corrections: diminishing returns (80% -> 85%)
 
 ### 5. Test Across Websites
 - Train on one website, test on another

@@ -66,7 +66,7 @@ function renderAnnotation(ann: Annotation): void {
   note.textContent = ann.note;
 
   const closeBtn = document.createElement('button');
-  closeBtn.textContent = '✕';
+  closeBtn.textContent = 'x';
   closeBtn.style.cssText = 'float:right;background:none;border:none;cursor:pointer;font-size:10px;padding:0 0 2px 4px;color:#5a4200';
   closeBtn.addEventListener('click', async () => {
     note.remove();

@@ -3,9 +3,9 @@
  * maps the gaze feature to a screen coordinate via the calibrated affine
  * transform, smooths it, and drives the cursor. Click triggers:
  *
- *   - brow raise           → click at gaze point
- *   - dwell 800ms in 40px  → click (with the cursor's settled position)
- *   - wink left / right    → scroll down / up   (per the PRD gesture map)
+ *   - brow raise           -> click at gaze point
+ *   - dwell 800ms in 40px  -> click (with the cursor's settled position)
+ *   - wink left / right    -> scroll down / up   (per the PRD gesture map)
  *
  * If there's no stored calibration, the first activation runs the 9-point flow.
  */
@@ -238,11 +238,11 @@ export class GazeDriver {
   }
 
   private handleTriggers(data: VisionFrameData): void {
-    // Brow raise → click (edge-triggered).
+    // Brow raise -> click (edge-triggered).
     if (data.browRaise && !this.browLatch) this.fireClick();
     this.browLatch = !!data.browRaise;
 
-    // Winks → scroll. A wink is one eye closed while the other stays open.
+    // Winks -> scroll. A wink is one eye closed while the other stays open.
     const winkL = !!data.blinkLeft && !data.blinkRight;
     const winkR = !!data.blinkRight && !data.blinkLeft;
     if (winkL && !this.blinkLLatch) window.scrollBy({ top: window.innerHeight * 0.4, behavior: 'smooth' });

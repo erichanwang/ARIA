@@ -22,7 +22,7 @@ const outFile = resolve(root, `extension-aria-v${version}.zip`);
 console.log('Building…');
 execSync('npm run build', { cwd: root, stdio: 'inherit' });
 
-console.log(`Packaging → ${outFile}`);
+console.log(`Packaging -> ${outFile}`);
 
 // Dynamically import yazl (pure-JS zip). Fall back to zip CLI if unavailable.
 let zipped = false;

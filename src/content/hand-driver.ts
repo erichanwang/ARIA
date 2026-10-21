@@ -2,11 +2,11 @@
  * Hand-mode driver. Consumes per-frame hand features (index fingertip + a
  * classified gesture) and drives the cursor + actions:
  *
- *   point      → move cursor
- *   pinch      → click (edge-triggered)
- *   open_palm  → pause (freeze cursor)
- *   two_finger → scroll (follow vertical hand motion)
- *   fist       → hold (suppress clicks while held)
+ *   point      -> move cursor
+ *   pinch      -> click (edge-triggered)
+ *   open_palm  -> pause (freeze cursor)
+ *   two_finger -> scroll (follow vertical hand motion)
+ *   fist       -> hold (suppress clicks while held)
  *
  * Sensitivity scales hand motion around the screen center (popup slider, M9).
  */
@@ -91,11 +91,11 @@ export class HandDriver {
           if (Math.abs(dy) > 2) window.scrollBy({ top: dy, behavior: 'auto' });
         }
         this.twoHandScrollLastY = data.fingertip.y;
-        this.hud.setCommand('Two-hand: scroll zone ←');
+        this.hud.setCommand('Two-hand: scroll zone <-');
         return; // Don't move cursor in scroll zone.
       } else {
         this.twoHandScrollLastY = null;
-        this.hud.setCommand('Two-hand: cursor zone →');
+        this.hud.setCommand('Two-hand: cursor zone ->');
       }
     }
 
@@ -122,7 +122,7 @@ export class HandDriver {
       this.palmZoomStartY = null;
     }
 
-    // Map fingertip → screen, scaled around center by sensitivity.
+    // Map fingertip -> screen, scaled around center by sensitivity.
     const cx = window.innerWidth / 2;
     const cy = window.innerHeight / 2;
     const rawX = data.fingertip.x * window.innerWidth;
@@ -157,7 +157,7 @@ export class HandDriver {
   private threeFingerStart = 0;
 
   private handleGesture(gesture: HandGesture, fingerY: number): void {
-    // Two-finger swipe → scroll.
+    // Two-finger swipe -> scroll.
     if (gesture === 'two_finger') {
       if (this.lastFingerY !== null) {
         const dy = (fingerY - this.lastFingerY) * window.innerHeight * 2;
@@ -168,7 +168,7 @@ export class HandDriver {
       this.lastFingerY = null;
     }
 
-    // Pinch → left click (edge-triggered).
+    // Pinch -> left click (edge-triggered).
     const pinching = gesture === 'pinch';
     if (pinching && !this.pinchLatch) {
       this.cursor.setState('acting');
@@ -177,34 +177,34 @@ export class HandDriver {
     }
     this.pinchLatch = pinching;
 
-    // Peace sign → right click (context menu).
+    // Peace sign -> right click (context menu).
     const peace = gesture === 'peace';
     if (peace && !this.peaceLatch) {
       const el = document.elementFromPoint(this.sx, this.sy);
       if (el) {
         el.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true, clientX: this.sx, clientY: this.sy }));
       }
-      this.hud.setCommand('Right-click ✌');
+      this.hud.setCommand('Right-click');
     }
     this.peaceLatch = peace;
 
-    // Thumbs up → confirm pending action.
+    // Thumbs up -> confirm pending action.
     const thumbsUp = gesture === 'thumbs_up';
     if (thumbsUp && !this.thumbsUpLatch) {
-      this.hud.setCommand('Confirmed 👍');
+      this.hud.setCommand('Confirmed');
       sendRuntime({ type: 'CONFIRM_ACTION', target: 'background' });
     }
     this.thumbsUpLatch = thumbsUp;
 
-    // Thumbs down → cancel pending action.
+    // Thumbs down -> cancel pending action.
     const thumbsDown = gesture === 'thumbs_down';
     if (thumbsDown && !this.thumbsDownLatch) {
-      this.hud.setCommand('Cancelled 👎');
+      this.hud.setCommand('Cancelled');
       sendRuntime({ type: 'CANCEL_ACTION', target: 'background' });
     }
     this.thumbsDownLatch = thumbsDown;
 
-    // Three fingers held for 1s → open task module picker.
+    // Three fingers held for 1s -> open task module picker.
     const threeFinger = gesture === 'three_finger';
     if (threeFinger && !this.threeFingerLatch) {
       this.threeFingerStart = performance.now();
@@ -243,10 +243,10 @@ export class HandDriver {
       this.lastSwipeAt = now;
       this.swipeHistory = [];
       if (dx < 0) {
-        this.hud.setCommand('Swipe left → back');
+        this.hud.setCommand('Swipe left -> back');
         history.back();
       } else {
-        this.hud.setCommand('Swipe right → forward');
+        this.hud.setCommand('Swipe right -> forward');
         history.forward();
       }
     } else if (ady > SWIPE_MIN_DIST && ady > adx * 1.5) {
@@ -255,10 +255,10 @@ export class HandDriver {
       this.swipeHistory = [];
       const amount = window.innerHeight * 0.6;
       if (dy < 0) {
-        this.hud.setCommand('Swipe up → scroll up');
+        this.hud.setCommand('Swipe up -> scroll up');
         window.scrollBy({ top: -amount, behavior: 'smooth' });
       } else {
-        this.hud.setCommand('Swipe down → scroll down');
+        this.hud.setCommand('Swipe down -> scroll down');
         window.scrollBy({ top: amount, behavior: 'smooth' });
       }
     }

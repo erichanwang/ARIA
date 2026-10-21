@@ -56,7 +56,7 @@ function showSummaryCard(result: SummarizeResult): void {
   title.style.cssText = 'font-size:11px;text-transform:uppercase;letter-spacing:0.7px;color:#9aa0aa;font-weight:700';
   title.textContent = 'Page Summary';
   const closeBtn = document.createElement('button');
-  closeBtn.textContent = '✕';
+  closeBtn.textContent = 'x';
   closeBtn.style.cssText = 'background:none;border:none;color:#9aa0aa;cursor:pointer;font-size:14px;padding:0';
   closeBtn.addEventListener('click', () => card.remove());
   header.append(title, closeBtn);

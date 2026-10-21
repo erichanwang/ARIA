@@ -30,32 +30,32 @@ function showOnboarding(): void {
 
   const steps = [
     {
-      icon: '🤖',
+      icon: '1',
       title: 'Welcome to ARIA',
       body: 'ARIA (Adaptive Real-time Intelligent Agent) controls your browser with your voice, eyes, or hands — powered by Claude AI. You can click, scroll, fill forms, translate, read pages aloud, and much more.',
     },
     {
-      icon: '🎤',
+      icon: '2',
       title: 'Voice commands',
       body: 'Say <strong>"Hey ARIA"</strong> then speak naturally: <em>"click the login button"</em>, <em>"scroll down"</em>, <em>"fill in my name"</em>, <em>"read this page"</em>, or <em>"translate to Spanish"</em>.',
     },
     {
-      icon: '👁',
+      icon: '3',
       title: 'Input modes',
       body: 'Switch modes in the ARIA popup: <strong>Voice</strong> for Claude-powered commands, <strong>Eye</strong> for gaze + brow-raise control, <strong>Hand</strong> for gesture control via webcam.',
     },
     {
-      icon: '⌨️',
+      icon: '4',
       title: 'Keyboard shortcuts',
       body: '<strong>Ctrl+Shift+P</strong> opens the command palette to type commands, <strong>Ctrl+Shift+O</strong> shows page outline, <strong>Ctrl+Shift+R</strong> starts auto-scroll, <strong>Ctrl+Shift+?</strong> shows all shortcuts.',
     },
     {
-      icon: '🎬',
+      icon: '5',
       title: 'Macros',
       body: 'Record multi-step automations: say <strong>"start recording"</strong>, then run your commands, then <strong>"stop recording my macro"</strong>. Replay with <strong>"run my macro"</strong>.',
     },
     {
-      icon: '🔑',
+      icon: '6',
       title: 'Set your API key',
       body: 'Open the ARIA popup and enter your <strong>Anthropic API key</strong>. Keys start with <code>sk-ant-</code>. All processing happens on-device except the Claude API call.',
     },
