@@ -144,14 +144,41 @@ Total (stages 1-3)                           median 0.348ms   p95 1.001ms
 environment. That stage dominates real end-to-end latency in practice; do not read the numbers above as the full user-perceived latency.
 
 **DOM-finder benchmark** - `npm run eval:dom-finder` runs the 6-strategy
-finder against 20 fixture DOM structures (login forms, nav bars, card
-CTAs, icon-only buttons, the KI-08 synthetic-label SPA patterns, and a
-deliberate no-match case):
+finder against 28 hand-built fixture DOM structures (login forms, nav bars, card
+CTAs, icon-only buttons, the KI-08 synthetic-label SPA patterns, open shadow
+roots, and deliberately unsolvable cases):
 
 ```
-Hit rate: 20/20 = 100.0%
-Fallback distribution (of 20 hits): text 8, aria-label 4, attribute 2,
-  name-id 2, nearest-interactive 2, submit-intent 1, none 1
+Fixtures: 28
+Overall: 28/28 = 100.0%
+  - resolved to the correct element: 24/24 = 100.0%
+  - correctly declined an unsolvable case (canvas UI, unmounted virtualized row, closed shadow root, deliberate no-match): 4/4
+Fallback distribution: text 9, aria-label 7, none 4, nearest-interactive 3,
+  attribute 2, name-id 2, submit-intent 1
+```
+
+**Synthetic DOM-finder benchmark** - `npm run eval:dom-finder-synthetic`
+generates 1,000 fixtures from templates of the same DOM families with a seeded
+RNG (seed 42, deterministic), randomizing labels, command phrasing, and
+distractor elements. These are synthetic, not real websites and not
+self-collected; they measure the resolver over volume and variety, not live
+multi-site accuracy. Measured 2026-10-21:
+
+```
+=== SYNTHETIC DOM-finder benchmark (1,000 generated fixtures - NOT real websites, NOT self-collected) ===
+Fixtures: 1000 (seed=42, deterministic)
+Overall: 990/1000 = 99.0%
+  - resolved to the correct element: 848/858 = 98.8%
+  - correctly declined an unsolvable case (canvas UI, closed shadow root): 142/142
+
+Per-strategy breakdown (fire rate = % of all fixtures answered by this strategy; hit rate = accuracy when it fires):
+  text                fired  295/1000 ( 29.5%)   hit rate  99.0% (292/295)
+  aria-label          fired  282/1000 ( 28.2%)   hit rate 100.0% (282/282)
+  none                fired  149/1000 ( 14.9%)   hit rate  95.3% (142/149)
+  attribute           fired   72/1000 (  7.2%)   hit rate 100.0% (72/72)
+  name-id             fired   72/1000 (  7.2%)   hit rate 100.0% (72/72)
+  nearest-interactive fired   70/1000 (  7.0%)   hit rate 100.0% (70/70)
+  submit-intent       fired   60/1000 (  6.0%)   hit rate 100.0% (60/60)
 ```
 
 This is a fixture benchmark, not a live crawl; it cannot stand in for
